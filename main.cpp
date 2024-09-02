@@ -1,39 +1,9 @@
 #include <SDL.h>
 #include <iostream>
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-
-bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-
-    window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (!window) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return false;
-    }
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return false;
-    }
-
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Blue background
-    return true;
-}
-
-void close(SDL_Window*& window, SDL_Renderer*& renderer) {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
+#include "init.h"
+#include "Shape.h"
+#include "Physics.h"
+#include "InputHandler.h"
 
 int main(int argc, char* args[]) {
     SDL_Window* window = nullptr;
@@ -41,28 +11,54 @@ int main(int argc, char* args[]) {
 
     if (!init(window, renderer)) {
         std::cerr << "Failed to initialize!" << std::endl;
-        return -1;
+        return 1;
     }
 
-    // Set window size and position
-    SDL_SetWindowSize(window, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-
     bool quit = false;
-    SDL_Event e;
+    float dx = 0, dy = 0;
+    Physics physics;
+    Shape shape(100, 100, SQUARE_SIZE, SQUARE_SIZE, { 255, 0, 0, 255 }); // Red shape
+
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    shape.setBounds(windowWidth, windowHeight);
 
     while (!quit) {
+        SDL_Event e;
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
+            else if (e.type == SDL_WINDOWEVENT) {
+                if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                    windowWidth = e.window.data1;
+                    windowHeight = e.window.data2;
+                    SDL_RenderSetLogicalSize(renderer, windowWidth, windowHeight);
+                    shape.setBounds(windowWidth, windowHeight);
+                }
+            }
         }
 
+        handleInput(quit, dx, dy);
+        physics.applyGravity(dy);
+        shape.move(static_cast<int>(dx), static_cast<int>(dy));
+
+        // Clear screen and render
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Blue background
         SDL_RenderClear(renderer);
-        // Draw something here if needed
+
+        // Draw shape
+        shape.draw(renderer);
+
         SDL_RenderPresent(renderer);
+
+        dx = 0;
+        dy = 0;
     }
 
-    close(window, renderer);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
     return 0;
 }
