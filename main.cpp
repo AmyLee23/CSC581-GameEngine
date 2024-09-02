@@ -1,8 +1,8 @@
 #include <SDL.h>
 #include <iostream>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 800; // 800
+const int SCREEN_HEIGHT = 600; // 600
 
 bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
