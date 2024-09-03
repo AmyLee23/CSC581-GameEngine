@@ -5,13 +5,22 @@
 class Shape {
 public:
     Shape(int x, int y, int w, int h, SDL_Color color);
-    void setBounds(int windowWidth, int windowHeight);
+
     void move(int dx, int dy);
     void draw(SDL_Renderer* renderer) const;
+    void setBounds(int windowWidth, int windowHeight);
+
+    // Add these methods
+    int getY() const;      // Getter for y-coordinate
+    void setY(int y);      // Setter for y-coordinate
 
 private:
-    int x_, y_;
-    int w_, h_;
+    int x_;
+    int y_;
+    int w_;
+    int h_;
     SDL_Color color_;
-    int windowWidth_, windowHeight_;
+    int windowWidth_;
+    int windowHeight_;
 };
+

@@ -1,7 +1,13 @@
 #pragma once
-#ifndef INPUT_HANDLER_H
-#define INPUT_HANDLER_H
+#ifndef INPUTHANDLER_H
+#define INPUTHANDLER_H
 
 void handleInput(bool& quit, float& dx, float& dy);
+void applyGravity(float& dy);
 
-#endif // INPUT_HANDLER_H
+// Optionally declare isJumping and isOnGround here if needed by other parts of the program
+extern bool isJumping;
+extern bool isOnGround;
+
+#endif  // INPUTHANDLER_H
+

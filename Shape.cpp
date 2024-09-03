@@ -25,3 +25,12 @@ void Shape::setBounds(int windowWidth, int windowHeight) {
     windowWidth_ = windowWidth;
     windowHeight_ = windowHeight;
 }
+
+// New methods
+int Shape::getY() const {
+    return y_;
+}
+
+void Shape::setY(int y) {
+    y_ = y;
+}

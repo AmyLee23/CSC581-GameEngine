@@ -22,20 +22,6 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
             success = false;
         }
         else {
-            // Print window size
-            int width, height;
-            SDL_GetWindowSize(window, &width, &height);
-            std::cout << "Window size: Width = " << width << ", Height = " << height << std::endl;
-
-            // Print DPI information
-            float ddpi, hdpi, vdpi;
-            if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) == 0) {
-                std::cout << "Display DPI: DDPI = " << ddpi << ", HDPI = " << hdpi << ", VDPI = " << vdpi << std::endl;
-            }
-            else {
-                std::cerr << "Failed to get display DPI! SDL_Error: " << SDL_GetError() << std::endl;
-            }
-
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             if (renderer == nullptr) {
                 std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
