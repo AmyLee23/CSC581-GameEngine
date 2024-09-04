@@ -34,3 +34,19 @@ int Shape::getY() const {
 void Shape::setY(int y) {
     y_ = y;
 }
+
+int Shape::getX() const {
+    return x_;
+}
+
+void Shape::setX(int x) {
+    x_ = x;
+}
+
+int Shape::getWidth() const {
+    return w_;
+}
+
+int Shape::getHeight() const {
+    return h_;
+}
