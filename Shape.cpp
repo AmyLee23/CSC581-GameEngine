@@ -1,8 +1,9 @@
 #include "Shape.h"
 #include <SDL.h>
+#include "init.h"
 
-Shape::Shape(int x, int y, int w, int h, SDL_Color color)
-    : x_(x), y_(y), w_(w), h_(h), color_(color), windowWidth_(800), windowHeight_(600) { }
+Shape::Shape(int x, int y, int w, int h, bool proportionalMode, SDL_Color color)
+    : x_(x), y_(y), w_(w), h_(h), color_(color), proportionalMode_(proportionalMode) { }
 
 void Shape::move(int dx, int dy) {
     x_ += dx;
@@ -16,7 +17,13 @@ void Shape::move(int dx, int dy) {
 }
 
 void Shape::draw(SDL_Renderer* renderer) const {
-    SDL_Rect fillRect = { x_, y_, w_, h_ };
+    float w = w_, h = h_;
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (proportionalMode_) {
+        w = abs(float(w_ * windowWidth_ )/ SCREEN_WIDTH);
+        h = abs(float(h_ * windowHeight_ )/ SCREEN_HEIGHT);
+    }
+    SDL_Rect fillRect = { x_, y_, w, h };
     SDL_SetRenderDrawColor(renderer, color_.r, color_.g, color_.b, color_.a);
     SDL_RenderFillRect(renderer, &fillRect);
 }
@@ -24,6 +31,14 @@ void Shape::draw(SDL_Renderer* renderer) const {
 void Shape::setBounds(int windowWidth, int windowHeight) {
     windowWidth_ = windowWidth;
     windowHeight_ = windowHeight;
+}
+
+void Shape::proportionality(bool &proportionalMode) {
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (state[SDL_SCANCODE_UP]) {
+        proportionalMode_ = !proportionalMode_;
+    }
+    proportionalMode = proportionalMode_;
 }
 
 // New methods

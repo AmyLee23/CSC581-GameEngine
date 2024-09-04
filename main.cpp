@@ -19,15 +19,17 @@ int main(int argc, char* args[]) {
         return 1;
     }
 
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
     bool quit = false;
     float dx = 0, dy = 0;
     Physics physics;  // Manages gravity and other physics
-    Shape shape(100, GROUND_Y, SQUARE_SIZE, SQUARE_SIZE, { 255, 0, 0, 255 }); // Red shape
-    Shape shape1(SCREEN_WIDTH/3, SCREEN_HEIGHT/2, 200, 50, { 0, 0, 0, 255 }); // Black shape
-
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    bool proportionalMode = true;
+    Shape shape(0, windowHeight-0.1f, SQUARE_SIZE, SQUARE_SIZE, proportionalMode, { 255, 0, 0, 255 }); // Red shape
+    Shape shape1(windowWidth/3, windowHeight/2, 200, 50, proportionalMode, { 0, 0, 0, 255 }); // Black shape
     shape.setBounds(windowWidth, windowHeight);
+    shape1.setBounds(windowWidth, windowHeight);
 
     while (!quit) {
         SDL_Event e;
@@ -41,12 +43,16 @@ int main(int argc, char* args[]) {
                     windowHeight = e.window.data2;
                     SDL_RenderSetLogicalSize(renderer, windowWidth, windowHeight);
                     shape.setBounds(windowWidth, windowHeight);
+                    std::cout << windowWidth << " " << windowHeight;
+                    shape1.setBounds(windowWidth, windowHeight);
                 }
             }
         }
 
         // Handle input and apply physics
         handleInput(quit, dx, dy);   // Get input for movement
+        shape.proportionality(proportionalMode);
+        shape1.proportionality(proportionalMode);
         physics.applyGravity(dy);    // Apply gravity to vertical movement
 
         // Update shape position

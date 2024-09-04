@@ -4,11 +4,12 @@
 
 class Shape {
 public:
-    Shape(int x, int y, int w, int h, SDL_Color color);
+    Shape(int x, int y, int w, int h, bool proportionalMode, SDL_Color color);
 
     void move(int dx, int dy);
     void draw(SDL_Renderer* renderer) const;
     void setBounds(int windowWidth, int windowHeight);
+    void proportionality(bool &proportionalMode);
 
     // Add these methods
     int getY() const;      // Getter for y-coordinate
@@ -22,5 +23,6 @@ private:
     SDL_Color color_;
     int windowWidth_;
     int windowHeight_;
+    bool proportionalMode_;
 };
 
