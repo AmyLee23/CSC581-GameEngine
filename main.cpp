@@ -7,5 +7,21 @@
 
 
 int main(int argc, char* args[]) {
+    // create WindowManager
+    // create Game
+
+    // WindowManager.init() if block
+
+    // create shapes, change configs, add to game
+
+    // while (!quit)
+        // while (SDL_PollEvent(&e) != 0) {
+            // handle SDL quit etc
+            // handle window resize events and update WindowManager
+           
+        // handleInput() for all controllable shapes in game
+        // update window with WindowManager
+
+    // close/destroy window with WindowManager
     return 0;
 }

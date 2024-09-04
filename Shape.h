@@ -13,6 +13,8 @@ public:
 
     virtual void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) = 0;
     void moveBack();
+    void moveBackX();
+    void moveBackY();
 
     const std::string& getName() const;
     int getX() const;

@@ -29,6 +29,14 @@ void Shape::moveBack() {
     y = lastY;
 }
 
+void Shape::moveBackX() {
+    x = lastX;
+}
+
+void Shape::moveBackY() {
+    y = lastY;
+}
+
 void Shape::setX(int newX) {
     lastX = x;
     x = newX;
