@@ -23,10 +23,10 @@ void ControllableShape::move(const std::unordered_map<std::string, Shape*>& shap
     }
 }
 
-void ControllableShape::handleInput(const Uint8* keystate, Game& game) {
+void ControllableShape::handleInput(const Uint8* keystate, Game* game) {
     lastX = x;
     lastY = y;
-    PhysicsEngine& physics = game.getPhysicsEngine();
+    PhysicsEngine& physics = game->getPhysicsEngine();
 
     if (flying) {
         if (keystate[SDL_SCANCODE_UP]) {
@@ -51,10 +51,10 @@ void ControllableShape::handleInput(const Uint8* keystate, Game& game) {
         x += dx;
     }
 
-    if (physics.checkSideCollision(this, game.getShapes())) {
+    if (physics.checkSideCollision(this, game->getShapes())) {
         moveBackX();
     }
-    if (physics.checkTopBottomCollision(this, game.getShapes())) {
+    if (physics.checkTopBottomCollision(this, game->getShapes())) {
         moveBackY();
     }
 }

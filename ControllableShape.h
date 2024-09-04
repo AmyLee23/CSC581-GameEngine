@@ -13,7 +13,7 @@ class ControllableShape : public Shape {
 public:
     ControllableShape(const std::string& name, int x, int y, int width, int height, int dx = 1, int dy = 1, bool flying = false);
     void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) override;
-    void handleInput(const Uint8* keystate, Game& game);
+    void handleInput(const Uint8* keystate, Game* game);
 
     std::tuple<int, int> getSpeed() const;
     void setSpeed(int dx, int dy);

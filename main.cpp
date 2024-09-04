@@ -14,14 +14,17 @@ int main(int argc, char* args[]) {
 
     // create shapes, change configs, add to game
 
+    // get keystate
+
     // while (!quit)
         // while (SDL_PollEvent(&e) != 0) {
             // handle SDL quit etc
             // handle window resize events and update WindowManager
            
-        // handleInput() for all controllable shapes in game
+        // game.step(keystate)
         // update window with WindowManager
 
     // close/destroy window with WindowManager
     return 0;
 }
+

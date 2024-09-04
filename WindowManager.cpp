@@ -65,8 +65,6 @@ void WindowManager::updateWindow(Game& game) {
 
         for (const auto& pair : shapes) {
             Shape* shape = pair.second;
-            shape->move(shapes, physics); // move the shape while checking collisions
-
             SDL_Rect rect = { shape->getX(), shape->getY(), shape->getWidth(), shape->getHeight() };
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red color for shapes
             SDL_RenderFillRect(renderer, &rect);

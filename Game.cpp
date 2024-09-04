@@ -1,5 +1,6 @@
 // Game.cpp
 #include "Game.h"
+#include "ControllableShape.h"
 
 Game::Game(WindowManager& windowManager)
     : physics(windowManager) {}
@@ -39,4 +40,18 @@ void Game::handleCollisions() {
 
 PhysicsEngine& Game::getPhysicsEngine() {
     return physics;
+}
+
+void Game::step(const Uint8* keystate) {
+    // handle input
+    for (const auto& pair : getShapes()) {
+        if (auto controllable = dynamic_cast<ControllableShape*>(pair.second)) {
+            controllable->handleInput(keystate, this);
+        }
+    }
+    // move each shape accordingly
+    for (const auto& pair : shapes) {
+        Shape* shape = pair.second;
+        shape->move(shapes, physics); // move the shape while checking collisions
+    }
 }
