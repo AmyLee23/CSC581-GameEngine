@@ -8,26 +8,26 @@ class PhysicsEngine; // forward decleration
 
 class Shape {
 public:
-    Shape(const std::string& name, int x, int y, int width, int height);
+    Shape(const std::string& name, float x, float y, int width, int height);
     virtual ~Shape() = default;
 
-    virtual void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) = 0;
+    virtual void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) = 0;
     void moveBack();
     void moveBackX();
     void moveBackY();
 
     const std::string& getName() const;
-    int getX() const;
-    int getY() const;
+    float getX() const;
+    float getY() const;
     int getWidth() const;
     int getHeight() const;
 
-    void setX(int newX);
-    void setY(int newY);
+    void setX(float newX);
+    void setY(float newY);
 
 protected:
     std::string name;
-    int x, y;
+    float x, y;
     int width, height;
-    int lastX, lastY;
+    float lastX, lastY;
 };

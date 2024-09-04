@@ -16,13 +16,19 @@ public:
     bool checkSideCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes);
     bool checkTopBottomCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes);
 
-    void applyGravity(Shape* shape);
+    void applyGravity(Shape* shape, float dt);
 
-    int getGravity();
-    void setGravity(int newGravity);
+    float getGravity();
+    void setGravity(float newGravity);
+
+    float getPixelsPerMeter();
+    void setPixelsPerMeter(float newPixelsPerMeter);
+
+    SDL_Rect makeRect(const Shape* shape);
 
 private:
-    int gravity = 1;
+    float gravity = 15.0f;
+    float pixelsPerMeter = 64.0f;
 
     WindowManager& windowManager;
 

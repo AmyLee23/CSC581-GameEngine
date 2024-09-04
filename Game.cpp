@@ -1,9 +1,12 @@
 // Game.cpp
 #include "Game.h"
 #include "ControllableShape.h"
+#include <iostream>
 
 Game::Game(WindowManager& windowManager)
-    : physics(windowManager) {}
+    : physics(windowManager) {
+    lastTime = std::chrono::steady_clock::now();
+}
 
 Game::~Game() {
     // Clean up all shapes
@@ -43,15 +46,23 @@ PhysicsEngine& Game::getPhysicsEngine() {
 }
 
 void Game::step(const Uint8* keystate) {
+    // handle time change in seconds
+    auto currentTime = std::chrono::steady_clock::now();
+    std::chrono::duration<float> elapsedTime = currentTime - lastTime;
+    float dt = elapsedTime.count();
+    lastTime = currentTime;
+
+    //std::cout << "Delta Time (dt): " << dt << " seconds" << std::endl;
+
     // handle input
     for (const auto& pair : getShapes()) {
         if (auto controllable = dynamic_cast<ControllableShape*>(pair.second)) {
-            controllable->handleInput(keystate, this);
+            controllable->handleInput(keystate, this, dt);
         }
     }
     // move each shape accordingly
     for (const auto& pair : shapes) {
         Shape* shape = pair.second;
-        shape->move(shapes, physics); // move the shape while checking collisions
+        shape->move(shapes, physics, dt); // move the shape while checking collisions
     }
 }

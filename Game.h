@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <chrono>
 
 #include "Shape.h"
 #include "PhysicsEngine.h"
@@ -25,4 +26,6 @@ private:
     std::unordered_map<std::string, Shape*> shapes; // store shapes by name
 
     PhysicsEngine physics;
+
+    std::chrono::steady_clock::time_point lastTime; // time of last step
 };

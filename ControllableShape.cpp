@@ -2,38 +2,50 @@
 #include "PhysicsEngine.h"
 #include "Game.h"
 
-ControllableShape::ControllableShape(const std::string& name, int x, int y, int width, int height, int dx, int dy, bool flying)
+ControllableShape::ControllableShape(const std::string& name, float x, float y, int width, int height, float dx, float dy, bool flying)
     : Shape(name, x, y, width, height), dx(dx), dy(dy), flying(flying) {}
 
 
-void ControllableShape::move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) {
+void ControllableShape::move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) {
+    lastX = x;
+    lastY = y;
+
+    if (!physics.checkBottomCollision(this, shapes)) {
+        isOnGround = false;
+    }
     if (!flying && !isOnGround) {
-        physics.applyGravity(this);
-        if (physics.checkSideCollision(this, shapes)) {
-            moveBackX();
-        }
-        else if (physics.checkBottomCollision(this, shapes)) {
+        physics.applyGravity(this, dt);
+        //if (physics.checkSideCollision(this, shapes)) {
+        //    moveBackX();
+        //}
+        if (physics.checkBottomCollision(this, shapes)) {
             moveBackY();
             isOnGround = true;
+            dy = 0;
         }
         else if (physics.checkTopBottomCollision(this, shapes)) {
+            dy = 0;
             moveBackY();
-        }
-        
+        } 
     }
 }
 
-void ControllableShape::handleInput(const Uint8* keystate, Game* game) {
+void ControllableShape::handleInput(const Uint8* keystate, Game* game, float dt) {
     lastX = x;
     lastY = y;
     PhysicsEngine& physics = game->getPhysicsEngine();
 
+    float metersMovedX = dx * dt;  // Distance in meters (speed * time)
+    float metersMovedY = dy * dt;
+    float moveX = metersMovedX * physics.getPixelsPerMeter();
+    float moveY = metersMovedY * physics.getPixelsPerMeter();
+
     if (flying) {
         if (keystate[SDL_SCANCODE_UP]) {
-            y -= dy;
+            y -= moveY;
         }
         if (keystate[SDL_SCANCODE_DOWN]) {
-            y += dy;
+            y += moveY;
         }
     }
 
@@ -45,10 +57,10 @@ void ControllableShape::handleInput(const Uint8* keystate, Game* game) {
     }
     
     if (keystate[SDL_SCANCODE_LEFT]) {
-        x -= dx;
+        x -= moveX;
     }
     if (keystate[SDL_SCANCODE_RIGHT]) {
-        x += dx;
+        x += moveX;
     }
 
     if (physics.checkSideCollision(this, game->getShapes())) {
@@ -59,11 +71,11 @@ void ControllableShape::handleInput(const Uint8* keystate, Game* game) {
     }
 }
 
-void ControllableShape::setSpeed(int newDx, int newDy) { dx = newDx; dy = newDy; }
-std::tuple<int, int> ControllableShape::getSpeed() const { return std::make_tuple(dx, dy); }
+void ControllableShape::setSpeed(float newDx, float newDy) { dx = newDx; dy = newDy; }
+std::tuple<float, float> ControllableShape::getSpeed() const { return std::make_tuple(dx, dy); }
 
-int ControllableShape::getJumpVelocity() { return jumpVelocity; }
-void ControllableShape::setJumpVelocity(int newJumpVelocity) { jumpVelocity = newJumpVelocity; }
+float ControllableShape::getJumpVelocity() { return jumpVelocity; }
+void ControllableShape::setJumpVelocity(float newJumpVelocity) { jumpVelocity = newJumpVelocity; }
 
 
 bool ControllableShape::getIsJumping() { return isJumping; }

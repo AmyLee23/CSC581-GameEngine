@@ -1,14 +1,19 @@
 #include "MovingShape.h"
 
-MovingShape::MovingShape(const std::string& name, int x, int y, int width, int height, int dx, int dy)
+MovingShape::MovingShape(const std::string& name, float x, float y, int width, int height, float dx, float dy)
     : Shape(name, x, y, width, height), dx(dx), dy(dy) {}
 
-void MovingShape::move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) {
+void MovingShape::move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) {
     lastX = x;
     lastY = y;
 
-    x += dx;
-    y += dy;
+    float metersMovedX = dx * dt;  // Distance in meters (speed * time)
+    float metersMovedY = dy * dt;
+    float moveX = metersMovedX * physics.getPixelsPerMeter();
+    float moveY = metersMovedY * physics.getPixelsPerMeter();
+
+    x += moveX;
+    y += moveY;
 
     if (physics.checkShapeCollision(this, shapes)) {
         moveBack();

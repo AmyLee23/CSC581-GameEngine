@@ -11,15 +11,15 @@ class Game;
 
 class ControllableShape : public Shape {
 public:
-    ControllableShape(const std::string& name, int x, int y, int width, int height, int dx = 1, int dy = 1, bool flying = false);
-    void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) override;
-    void handleInput(const Uint8* keystate, Game* game);
+    ControllableShape(const std::string& name, float x, float y, int width, int height, float dx = 5.0f, float dy = 0.0f, bool flying = false);
+    void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) override;
+    void handleInput(const Uint8* keystate, Game* game, float dt);
 
-    std::tuple<int, int> getSpeed() const;
-    void setSpeed(int dx, int dy);
+    std::tuple<float, float> getSpeed() const;
+    void setSpeed(float dx, float dy);
 
-    int getJumpVelocity();
-    void setJumpVelocity(int newJumpVelocity);
+    float getJumpVelocity();
+    void setJumpVelocity(float newJumpVelocity);
 
     bool getIsJumping();
     bool getIsOnGround();
@@ -30,10 +30,10 @@ public:
     void setFlying(bool flying);
 
 private:
-    int dx, dy;
+    float dx, dy;
     bool flying;
 
     bool isJumping = false;
     bool isOnGround = false;
-    int jumpVelocity = 1;
+    float jumpVelocity = 8.0f;
 };

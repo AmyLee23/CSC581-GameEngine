@@ -65,7 +65,7 @@ void WindowManager::updateWindow(Game& game) {
 
         for (const auto& pair : shapes) {
             Shape* shape = pair.second;
-            SDL_Rect rect = { shape->getX(), shape->getY(), shape->getWidth(), shape->getHeight() };
+            SDL_Rect rect = { static_cast<int>(shape->getX()), static_cast<int>(shape->getY()), shape->getWidth(), shape->getHeight() };
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red color for shapes
             SDL_RenderFillRect(renderer, &rect);
         }

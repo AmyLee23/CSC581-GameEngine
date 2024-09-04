@@ -1,18 +1,18 @@
 #include "Shape.h"
 #include "PhysicsEngine.h"
 
-Shape::Shape(const std::string& name, int x, int y, int width, int height)
+Shape::Shape(const std::string& name, float x, float y, int width, int height)
     : name(name), x(x), y(y), width(width), height(height), lastX(x), lastY(y) {}
 
 const std::string& Shape::getName() const {
     return name;
 }
 
-int Shape::getX() const {
+float Shape::getX() const {
     return x;
 }
 
-int Shape::getY() const {
+float Shape::getY() const {
     return y;
 }
 
@@ -37,12 +37,12 @@ void Shape::moveBackY() {
     y = lastY;
 }
 
-void Shape::setX(int newX) {
+void Shape::setX(float newX) {
     lastX = x;
     x = newX;
 }
 
-void Shape::setY(int newY) {
+void Shape::setY(float newY) {
     lastY = y;
     y = newY;
 }

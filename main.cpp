@@ -5,7 +5,6 @@
 #include "MovingShape.h"
 #include "PhysicsEngine.h"
 
-
 int main(int argc, char* args[]) {
     // create WindowManager
     // create Game
@@ -13,6 +12,9 @@ int main(int argc, char* args[]) {
     // WindowManager.init() if block
 
     // create shapes, change configs, add to game
+    // for controllable shapes, dy must be zero if flying is false
+    // make sure gravity, jump velocity, and initial velocities are appropriate as they are pseudo realistic in terms of m/s
+    // can also adjust pixels per meter
 
     // get keystate
 
@@ -27,4 +29,3 @@ int main(int argc, char* args[]) {
     // close/destroy window with WindowManager
     return 0;
 }
-

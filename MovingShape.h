@@ -5,9 +5,9 @@
 
 class MovingShape : public Shape {
 public:
-    MovingShape(const std::string& name, int x, int y, int width, int height, int dx, int dy);
-    void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics) override;
+    MovingShape(const std::string& name, float x, float y, int width, int height, float dx, float dy);
+    void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) override;
 
 protected:
-    int dx, dy;
+    float dx, dy;
 };
