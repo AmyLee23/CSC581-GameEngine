@@ -41,4 +41,5 @@ game-engine.vcxproj.filters
 game-engine.vcxproj.user
 game-engine/
 x64/
+private_main.cpp
 

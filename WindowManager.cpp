@@ -1,8 +1,8 @@
 #include "WindowManager.h"
-#include "Game.h"
+#include "PhysicsEngine.h"
 
 // constructor
-WindowManager::WindowManager() : window(nullptr), renderer(nullptr), m_windowExists(false) {}
+WindowManager::WindowManager() : window(nullptr), renderer(nullptr), windowWidth(800), windowHeight(600), m_windowExists(false) {}
 
 // destructor
 WindowManager::~WindowManager() {
@@ -10,6 +10,9 @@ WindowManager::~WindowManager() {
 }
 
 bool WindowManager::init(int screen_width, int screen_height) {
+    windowWidth = screen_width;
+    windowHeight = screen_height;
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return false;
@@ -52,10 +55,22 @@ bool WindowManager::init(int screen_width, int screen_height) {
 }
 
 void WindowManager::updateWindow(Game& game) {
+    PhysicsEngine physics = game.getPhysicsEngine();
+
     if (renderer) {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderClear(renderer);
 
-        // draw things from game state
+        const auto& shapes = game.getShapes();
+
+        for (const auto& pair : shapes) {
+            Shape* shape = pair.second;
+            shape->move(shapes, physics); // move the shape while checking collisions
+
+            SDL_Rect rect = { shape->getX(), shape->getY(), shape->getWidth(), shape->getHeight() };
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red color for shapes
+            SDL_RenderFillRect(renderer, &rect);
+        }
 
         SDL_RenderPresent(renderer);
     }
@@ -76,4 +91,18 @@ void WindowManager::close() {
 
 bool WindowManager::windowExists() const {
     return m_windowExists;
+}
+
+int WindowManager::getWindowWidth() const {
+    return windowWidth;
+}
+
+int WindowManager::getWindowHeight() const {
+    return windowHeight;
+}
+
+void WindowManager::setWindowSize(int width, int height) {
+    windowWidth = width;
+    windowHeight = height;
+    SDL_SetWindowSize(window, windowWidth, windowHeight);
 }
