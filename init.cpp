@@ -9,7 +9,7 @@ bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
 
     window = SDL_CreateWindow("SDL Window",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        800, 600, SDL_WINDOW_RESIZABLE); // Initial size, can be adjusted
+        SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE); // Initial size, can be adjusted
     if (!window) {
         // Handle window creation error
         return false;

@@ -20,8 +20,8 @@ void Shape::draw(SDL_Renderer* renderer) const {
     float w = w_, h = h_;
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if (proportionalMode_) {
-        w = abs(float(w_ * windowWidth_ )/ SCREEN_WIDTH);
-        h = abs(float(h_ * windowHeight_ )/ SCREEN_HEIGHT);
+        w = float(w_ * windowWidth_ )/ SCREEN_WIDTH;
+        h = float(h_ * windowHeight_ )/ SCREEN_HEIGHT;
     }
     SDL_Rect fillRect = { x_, y_, w, h };
     SDL_SetRenderDrawColor(renderer, color_.r, color_.g, color_.b, color_.a);
