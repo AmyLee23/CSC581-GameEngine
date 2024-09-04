@@ -1,5 +1,6 @@
 #include "InputHandler.h"
 #include <SDL.h>
+#include <stdio.h>
 
 // Constants for gravity and jump
 const float GRAVITY = 0.5f;

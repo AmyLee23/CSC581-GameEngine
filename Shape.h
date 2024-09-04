@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHAPE_H
+#define SHAPE_H
 
 #include <SDL.h>
 
@@ -11,18 +12,21 @@ public:
     void setBounds(int windowWidth, int windowHeight);
     void proportionality(bool &proportionalMode);
 
-    // Add these methods
-    int getY() const;      // Getter for y-coordinate
-    void setY(int y);      // Setter for y-coordinate
+    int getX() const;
+    void setX(int x);
+    int getY() const;
+    void setY(int y);
+
+    int getWidth() const;
+    int getHeight() const;
 
 private:
-    int x_;
-    int y_;
-    int w_;
-    int h_;
+    int x_, y_;
+    int w_, h_;
     SDL_Color color_;
     int windowWidth_;
     int windowHeight_;
     bool proportionalMode_;
 };
 
+#endif // SHAPE_H
