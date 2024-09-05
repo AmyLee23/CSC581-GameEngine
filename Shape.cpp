@@ -2,10 +2,11 @@
 #include <SDL.h>
 #include "init.h"
 
-Shape::Shape(int x, int y, int w, int h, bool proportionalMode, SDL_Color color)
-    : x_(x), y_(y), w_(w), h_(h), color_(color), proportionalMode_(proportionalMode) { }
+Shape::Shape(int x, int y, int w, int h, SDL_Color color)
+    : x_(x), y_(y), w_(w), h_(h), originalW_(w), originalH_(h), color_(color),
+    windowWidth_(INITIAL_WIDTH), windowHeight_(INITIAL_HEIGHT), proportionalScaling_(false) { }
 
-void Shape::move(int dx, int dy) {
+void Shape::move(float dx, float dy) {
     x_ += dx;
     y_ += dy;
 
@@ -17,13 +18,7 @@ void Shape::move(int dx, int dy) {
 }
 
 void Shape::draw(SDL_Renderer* renderer) const {
-    float w = w_, h = h_;
-    const Uint8* state = SDL_GetKeyboardState(NULL);
-    if (proportionalMode_) {
-        w = float(w_ * windowWidth_ )/ SCREEN_WIDTH;
-        h = float(h_ * windowHeight_ )/ SCREEN_HEIGHT;
-    }
-    SDL_Rect fillRect = { x_, y_, w, h };
+    SDL_Rect fillRect = { x_, y_, w_, h_ };
     SDL_SetRenderDrawColor(renderer, color_.r, color_.g, color_.b, color_.a);
     SDL_RenderFillRect(renderer, &fillRect);
 }
@@ -31,23 +26,38 @@ void Shape::draw(SDL_Renderer* renderer) const {
 void Shape::setBounds(int windowWidth, int windowHeight) {
     windowWidth_ = windowWidth;
     windowHeight_ = windowHeight;
-}
-
-void Shape::proportionality(bool &proportionalMode) {
-    const Uint8* state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_UP]) {
-        proportionalMode_ = !proportionalMode_;
+    if (proportionalScaling_) {
+        applyScaling(windowWidth, windowHeight);
     }
-    proportionalMode = proportionalMode_;
 }
 
-// New methods
-int Shape::getY() const {
-    return y_;
+void Shape::setProportionalScaling(bool enable) {
+    proportionalScaling_ = enable;
+    if (!proportionalScaling_) {
+        resetSize(originalW_, originalH_);
+    }
 }
 
-void Shape::setY(int y) {
-    y_ = y;
+void Shape::applyScaling(int windowWidth, int windowHeight) {
+    // Example scaling logic: Resize based on window dimensions
+    // Adjust these factors as needed
+    float scaleX = static_cast<float>(windowWidth) / INITIAL_WIDTH; // scale based on window width
+    float scaleY = static_cast<float>(windowHeight) / INITIAL_HEIGHT; // scale based on window height
+    float scale = (scaleX + scaleY) / 2.0f; // Average scaling factor for proportional scaling
+
+    // Update width and height based on scaling factor
+    w_ = static_cast<int>(originalW_ * scale);
+    h_ = static_cast<int>(originalH_ * scale);
+
+    // Center the shape in the window
+    x_ = (windowWidth - w_) / 2;
+    y_ = (windowHeight - h_) / 2;
+}
+
+void Shape::resetSize(int originalW, int originalH) {
+    w_ = originalW;
+    h_ = originalH;
+
 }
 
 int Shape::getX() const {
@@ -56,6 +66,14 @@ int Shape::getX() const {
 
 void Shape::setX(int x) {
     x_ = x;
+}
+
+int Shape::getY() const {
+    return y_;
+}
+
+void Shape::setY(int y) {
+    y_ = y;
 }
 
 int Shape::getWidth() const {

@@ -5,12 +5,13 @@
 
 class Shape {
 public:
-    Shape(int x, int y, int w, int h, bool proportionalMode, SDL_Color color);
-
-    void move(int dx, int dy);
+    Shape(int x, int y, int w, int h, SDL_Color color);
+    void move(float dx, float dy);
     void draw(SDL_Renderer* renderer) const;
     void setBounds(int windowWidth, int windowHeight);
-    void proportionality(bool &proportionalMode);
+    void setProportionalScaling(bool enable);
+    void applyScaling(int windowWidth, int windowHeight);
+    void resetSize(int originalW, int originalH);
 
     int getX() const;
     void setX(int x);
@@ -23,10 +24,10 @@ public:
 private:
     int x_, y_;
     int w_, h_;
+    int originalW_, originalH_;
     SDL_Color color_;
-    int windowWidth_;
-    int windowHeight_;
-    bool proportionalMode_;
+    int windowWidth_, windowHeight_;
+    bool proportionalScaling_;
 };
 
 #endif // SHAPE_H

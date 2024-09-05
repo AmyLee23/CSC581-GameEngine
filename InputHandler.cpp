@@ -2,6 +2,10 @@
 #include <SDL.h>
 #include <stdio.h>
 
+//Use the following to help with keyboard input and setup
+//https://wiki.libsdl.org/SDL2/SDL_GetKeyboardState
+//https://wiki.libsdl.org/SDL2/SDL_ScancodeAndKeycode
+
 // Constants for gravity and jump
 const float GRAVITY = 0.5f;
 const float JUMP_VELOCITY = -12.0f;
