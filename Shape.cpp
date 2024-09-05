@@ -34,7 +34,7 @@ void Shape::setBounds(int windowWidth, int windowHeight) {
 void Shape::setProportionalScaling(bool enable) {
     proportionalScaling_ = enable;
     if (!proportionalScaling_) {
-        resetSize(originalW_, originalH_);
+        resetSize(originalW_, originalH_);  // calls reset size to reset the size if cancel proportional
     }
 }
 
@@ -48,10 +48,6 @@ void Shape::applyScaling(int windowWidth, int windowHeight) {
     // Update width and height based on scaling factor
     w_ = static_cast<int>(originalW_ * scale);
     h_ = static_cast<int>(originalH_ * scale);
-
-    // Center the shape in the window
-    x_ = (windowWidth - w_) / 2;
-    y_ = (windowHeight - h_) / 2;
 }
 
 void Shape::resetSize(int originalW, int originalH) {
