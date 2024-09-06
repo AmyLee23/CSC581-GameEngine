@@ -15,6 +15,10 @@ Game::~Game() {
     }
 }
 
+void Game::toggleScalingMode() {
+    proportionalMode = !proportionalMode;
+}
+
 void Game::addShape(Shape* shape) {
     shapes[shape->getName()] = shape;
 }
@@ -60,6 +64,12 @@ void Game::step(const Uint8* keystate) {
             controllable->handleInput(keystate, this, dt);
         }
     }
+
+    if (keystate[SDL_SCANCODE_0]) {
+        toggleScalingMode();
+        std::cout << "Toggling" << std::endl;
+    }
+
     // move each shape accordingly
     for (const auto& pair : shapes) {
         Shape* shape = pair.second;

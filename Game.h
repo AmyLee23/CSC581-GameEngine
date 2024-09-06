@@ -22,10 +22,12 @@ public:
 
     PhysicsEngine& getPhysicsEngine();
 
+    void toggleScalingMode();
+    bool isProportionalMode() const { return proportionalMode; }
+
 private:
     std::unordered_map<std::string, Shape*> shapes; // store shapes by name
-
     PhysicsEngine physics;
-
     std::chrono::steady_clock::time_point lastTime; // time of last step
+    bool proportionalMode = true;
 };
