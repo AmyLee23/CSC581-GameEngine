@@ -2,8 +2,8 @@
 #include "PhysicsEngine.h"
 #include "Game.h"
 
-ControllableShape::ControllableShape(const std::string& name, float x, float y, int width, int height, float dx, float dy, bool flying)
-    : Shape(name, x, y, width, height), dx(dx), dy(dy), flying(flying) {}
+ControllableShape::ControllableShape(const std::string& name, float x, float y, int width, int height, Drawer& drawer, float dx, float dy, bool flying)
+    : Shape(name, x, y, width, height, drawer), dx(dx), dy(dy), flying(flying) {}
 
 
 void ControllableShape::move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) {

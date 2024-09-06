@@ -18,12 +18,20 @@ public:
 
     int getWindowWidth() const;
     int getWindowHeight() const;
+    int getLastWindowWidth() const;
+    int getLastWindowHeight() const;
     void setWindowSize(int width, int height);
+    void updateWindowSize(int width, int height, Game& game);
+
+    SDL_Window* getWindow();
+    SDL_Renderer* getRenderer();
 
 private:
     SDL_Window* window;             // SDL window pointer
     SDL_Renderer* renderer;         // SDL renderer pointer
     int windowWidth;
     int windowHeight;
+    int lastWindowWidth;
+    int lastWindowHeight;
     bool m_windowExists;            // if window exists
 };

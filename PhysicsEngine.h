@@ -29,9 +29,7 @@ public:
 private:
     float gravity = 15.0f;
     float pixelsPerMeter = 64.0f;
-
     WindowManager& windowManager;
-
     bool checkCollision(const SDL_Rect& a, const SDL_Rect& b) const;
     bool checkWindowBounds(const Shape* shape) const;
 };

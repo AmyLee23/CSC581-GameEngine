@@ -5,6 +5,6 @@
 
 class FixedShape : public Shape {
 public:
-    FixedShape(const std::string& name, float x, float y, int width, int height);
+    FixedShape(const std::string& name, float x, float y, int width, int height, Drawer& drawer);
     void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) override;
 };

@@ -2,7 +2,9 @@
 #include "PhysicsEngine.h"
 
 // constructor
-WindowManager::WindowManager() : window(nullptr), renderer(nullptr), windowWidth(800), windowHeight(600), m_windowExists(false) {}
+WindowManager::WindowManager() : 
+    window(nullptr), renderer(nullptr), windowWidth(800), windowHeight(600), 
+    lastWindowWidth(windowWidth), lastWindowHeight(windowHeight), m_windowExists(false) {}
 
 // destructor
 WindowManager::~WindowManager() {
@@ -65,15 +67,16 @@ void WindowManager::updateWindow(Game& game) {
 
         for (const auto& pair : shapes) {
             Shape* shape = pair.second;
-            int renderWidth = shape->getWidth();
-            int renderHeight = shape->getHeight();
-            if (game.isProportionalMode()) {
-                //std::cout << getWindowWidth() << " " << getWindowHeight() << std::endl;
-                renderWidth = (float(renderWidth) / 800) * getWindowWidth();
-                renderHeight = (float(renderHeight) / 600) * getWindowHeight();
-                //std::cout << renderWidth << " " << renderHeight << std::endl;
-            }
-            SDL_Rect rect = { static_cast<int>(shape->getX()), static_cast<int>(shape->getY()), renderWidth, renderHeight };
+            //int renderWidth = shape->getWidth();
+            //int renderHeight = shape->getHeight();
+            //if (game.isProportionalMode()) {
+            //    //std::cout << getWindowWidth() << " " << getWindowHeight() << std::endl;
+            //    renderWidth = (float(renderWidth) / 800) * getWindowWidth();
+            //    renderHeight = (float(renderHeight) / 600) * getWindowHeight();
+            //    //std::cout << renderWidth << " " << renderHeight << std::endl;
+            //}
+            shape->getDrawer().drawShape(game, shape, game.isProportionalMode());
+            SDL_Rect rect = { static_cast<int>(shape->getX()), static_cast<int>(shape->getY()), shape->getWidth(), shape->getHeight()};
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red color for shapes
             SDL_RenderFillRect(renderer, &rect);
         }
@@ -108,7 +111,44 @@ int WindowManager::getWindowHeight() const {
 }
 
 void WindowManager::setWindowSize(int width, int height) {
+    lastWindowWidth = windowWidth;
+    lastWindowHeight = windowHeight;
     windowWidth = width;
     windowHeight = height;
     SDL_SetWindowSize(window, windowWidth, windowHeight);
+}
+
+void WindowManager::updateWindowSize(int width, int height, Game& game) {
+    lastWindowWidth = windowWidth;
+    lastWindowHeight = windowHeight;
+    windowWidth = width;
+    windowHeight = height;
+
+    const auto& shapes = game.getShapes();
+    for (const auto& pair : shapes) {
+        Shape* shape = pair.second;
+
+        shape->getDrawer().prepareRelativePosition(shape, game);
+
+        if (game.isProportionalMode()) {
+            shape->getDrawer().prepareScaling(shape, game);
+        }
+    }
+
+    SDL_SetWindowSize(window, windowWidth, windowHeight);
+}
+
+SDL_Window* WindowManager::getWindow() {
+    return window;
+}
+
+SDL_Renderer* WindowManager::getRenderer() {
+    return renderer;
+}
+
+int WindowManager::getLastWindowWidth() const {
+    return lastWindowWidth;
+}
+int WindowManager::getLastWindowHeight() const {
+    return lastWindowHeight;
 }

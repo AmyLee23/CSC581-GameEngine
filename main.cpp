@@ -4,10 +4,13 @@
 #include "FixedShape.h"
 #include "MovingShape.h"
 #include "PhysicsEngine.h"
+#include "Drawer.h"
 
 int main(int argc, char* args[]) {
-    // create WindowManager
-    // create Game
+    WindowManager windowManager;
+    PhysicsEngine physics(windowManager);
+    Game game(windowManager, physics);
+    Drawer drawer;
 
     // WindowManager.init() if block
 
@@ -17,11 +20,20 @@ int main(int argc, char* args[]) {
     // can also adjust pixels per meter
 
     // get keystate
+    SDL_Event e;
 
     // while (!quit)
         // while (SDL_PollEvent(&e) != 0) {
             // handle SDL quit etc
-            // handle window resize events and update WindowManager
+
+            // handle window resize events and update WindowManager with updateWindowSize (not setWindowSize())
+
+            // handle a key toggle for scaling like:
+            if (e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_a) {
+                    game.toggleScalingMode();
+                }
+            }
            
         // game.step(keystate)
         // update window with WindowManager

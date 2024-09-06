@@ -3,8 +3,8 @@
 #include "ControllableShape.h"
 #include <iostream>
 
-Game::Game(WindowManager& windowManager)
-    : physics(windowManager) {
+Game::Game(WindowManager& windowManager, PhysicsEngine& physics)
+    : windowManager(windowManager), physics(physics) {
     lastTime = std::chrono::steady_clock::now();
 }
 
@@ -49,6 +49,10 @@ PhysicsEngine& Game::getPhysicsEngine() {
     return physics;
 }
 
+WindowManager& Game::getWindowManager() {
+    return windowManager;
+}
+
 void Game::step(const Uint8* keystate) {
     // handle time change in seconds
     auto currentTime = std::chrono::steady_clock::now();
@@ -65,10 +69,10 @@ void Game::step(const Uint8* keystate) {
         }
     }
 
-    if (keystate[SDL_SCANCODE_0]) {
-        toggleScalingMode();
-        std::cout << "Toggling" << std::endl;
-    }
+    //if (keystate[SDL_SCANCODE_0]) {
+    //    toggleScalingMode();
+    //    std::cout << "Toggling" << std::endl;
+    //}
 
     // move each shape accordingly
     for (const auto& pair : shapes) {
