@@ -1,3 +1,4 @@
+
 #include "WindowManager.h"
 #include "Game.h"
 #include "ControllableShape.h"
@@ -20,7 +21,7 @@ int main(int argc, char* args[]) {
     // can also adjust pixels per meter
 
     // get keystate
-    SDL_Event e;
+    // SDL_Event e;
 
     // while (!quit)
         // while (SDL_PollEvent(&e) != 0) {
@@ -29,11 +30,11 @@ int main(int argc, char* args[]) {
             // handle window resize events and update WindowManager with updateWindowSize (not setWindowSize())
 
             // handle a key toggle for scaling like:
-            if (e.type == SDL_KEYDOWN) {
-                if (e.key.keysym.sym == SDLK_a) {
-                    game.toggleScalingMode();
-                }
-            }
+            //if (e.type == SDL_KEYDOWN) {
+            //    if (e.key.keysym.sym == SDLK_a) {
+            //        game.toggleScalingMode();
+            //    }
+            //}
            
         // game.step(keystate)
         // update window with WindowManager
