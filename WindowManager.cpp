@@ -67,18 +67,7 @@ void WindowManager::updateWindow(Game& game) {
 
         for (const auto& pair : shapes) {
             Shape* shape = pair.second;
-            //int renderWidth = shape->getWidth();
-            //int renderHeight = shape->getHeight();
-            //if (game.isProportionalMode()) {
-            //    //std::cout << getWindowWidth() << " " << getWindowHeight() << std::endl;
-            //    renderWidth = (float(renderWidth) / 800) * getWindowWidth();
-            //    renderHeight = (float(renderHeight) / 600) * getWindowHeight();
-            //    //std::cout << renderWidth << " " << renderHeight << std::endl;
-            //}
             shape->getDrawer().drawShape(game, shape, game.isProportionalMode());
-            SDL_Rect rect = { static_cast<int>(shape->getX()), static_cast<int>(shape->getY()), shape->getWidth(), shape->getHeight()};
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red color for shapes
-            SDL_RenderFillRect(renderer, &rect);
         }
 
         SDL_RenderPresent(renderer);

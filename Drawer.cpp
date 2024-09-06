@@ -11,9 +11,9 @@ void Drawer::drawShape(Game& game, Shape* shape, bool scaling) {
 	//prepareRelativePosition(shape, game);
 	//if (scaling) { prepareScaling(shape, game); }
 	
-
+	SDL_Color color = shape->getColor();
     SDL_Rect rect = { static_cast<int>(shape->getX()), static_cast<int>(shape->getY()), shape->getWidth(), shape->getHeight() };
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red color for shapes
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a); // red color for shapes
     SDL_RenderFillRect(renderer, &rect);
 }
 

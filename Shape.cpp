@@ -1,8 +1,8 @@
 #include "Shape.h"
 #include "PhysicsEngine.h"
 
-Shape::Shape(const std::string& name, float x, float y, int width, int height, Drawer& drawer)
-    : name(name), x(x), y(y), width(width), height(height), lastX(x), lastY(y), drawer(drawer) {}
+Shape::Shape(const std::string& name, float x, float y, int width, int height, Drawer& drawer, SDL_Color color)
+    : name(name), x(x), y(y), width(width), height(height), lastX(x), lastY(y), drawer(drawer), color(color) {}
 
 const std::string& Shape::getName() const {
     return name;
@@ -22,6 +22,10 @@ int Shape::getWidth() const {
 
 int Shape::getHeight() const {
     return height;
+}
+
+SDL_Color Shape::getColor() const {
+    return color;
 }
 
 void Shape::moveBack() {

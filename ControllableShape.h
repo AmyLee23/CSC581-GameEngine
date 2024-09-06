@@ -11,7 +11,7 @@ class Game;
 
 class ControllableShape : public Shape {
 public:
-    ControllableShape(const std::string& name, float x, float y, int width, int height, Drawer& drawer, float dx = 5.0f, float dy = 0.0f, bool flying = false);
+    ControllableShape(const std::string& name, float x, float y, int width, int height, Drawer& drawer, SDL_Color color = { 0, 255, 0, 255 }, float dx = 5.0f, float dy = 0.0f, bool flying = false);
     void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) override;
     void handleInput(const Uint8* keystate, Game* game, float dt);
 

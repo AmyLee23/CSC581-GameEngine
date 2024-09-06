@@ -8,7 +8,7 @@ class PhysicsEngine; // forward decleration
 
 class Shape {
 public:
-    Shape(const std::string& name, float x, float y, int width, int height, Drawer& drawer);
+    Shape(const std::string& name, float x, float y, int width, int height, Drawer& drawer, SDL_Color color = {255, 0, 0, 255});
     virtual ~Shape() = default;
 
     virtual void move(const std::unordered_map<std::string, Shape*>& shapes, PhysicsEngine& physics, float dt) = 0;
@@ -21,6 +21,7 @@ public:
     float getY() const;
     int getWidth() const;
     int getHeight() const;
+    SDL_Color getColor() const;
 
     void setX(float newX);
     void setY(float newY);
@@ -35,4 +36,5 @@ protected:
     int width, height;
     float lastX, lastY;
     Drawer& drawer;
+    SDL_Color color;
 };
