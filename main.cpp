@@ -1,4 +1,3 @@
-
 #include "WindowManager.h"
 #include "Game.h"
 #include "ControllableShape.h"
