@@ -1,0 +1,37 @@
+#pragma once
+
+#include <unordered_map>
+#include <string>
+#include <chrono>
+
+#include "Shape.h"
+#include "PhysicsEngine.h"
+#include "WindowManager.h"
+
+class Game {
+public:
+    Game(WindowManager& windowManager, PhysicsEngine& physicsEngine);
+    ~Game();
+
+    void addShape(Shape* shape); // add a shape to the game by pointer
+    Shape* getShape(const std::string& name) const; // get a shape by name
+    const std::unordered_map<std::string, Shape*>& getShapes() const; //get all shapes
+
+    void step(const Uint8* keystate); // step the world forward one unit
+
+    void handleCollisions(); // unused
+
+    PhysicsEngine& getPhysicsEngine();
+
+    WindowManager& getWindowManager();
+
+    void toggleScalingMode();
+    bool isProportionalMode() const { return proportionalMode; }
+
+private:
+    std::unordered_map<std::string, Shape*> shapes; // store shapes by name
+    PhysicsEngine& physics;
+    std::chrono::steady_clock::time_point lastTime; // time of last step
+    bool proportionalMode = true;
+    WindowManager& windowManager;
+};

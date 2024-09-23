@@ -1,68 +1,43 @@
-#include <SDL.h>
-#include <iostream>
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-
-bool init(SDL_Window*& window, SDL_Renderer*& renderer) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-
-    window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (!window) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return false;
-    }
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return false;
-    }
-
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Blue background
-    return true;
-}
-
-void close(SDL_Window*& window, SDL_Renderer*& renderer) {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
+#include "WindowManager.h"
+#include "Game.h"
+#include "ControllableShape.h"
+#include "FixedShape.h"
+#include "MovingShape.h"
+#include "PhysicsEngine.h"
+#include "Drawer.h"
 
 int main(int argc, char* args[]) {
-    SDL_Window* window = nullptr;
-    SDL_Renderer* renderer = nullptr;
+    WindowManager windowManager;
+    PhysicsEngine physics(windowManager);
+    Game game(windowManager, physics);
+    Drawer drawer;
 
-    if (!init(window, renderer)) {
-        std::cerr << "Failed to initialize!" << std::endl;
-        return -1;
-    }
+    // WindowManager.init() if block
 
-    // Set window size and position
-    SDL_SetWindowSize(window, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    // create shapes, change configs, add to game
+    // for controllable shapes, dy must be zero if flying is false
+    // make sure gravity, jump velocity, and initial velocities are appropriate as they are pseudo realistic in terms of m/s
+    // can also adjust pixels per meter
 
-    bool quit = false;
-    SDL_Event e;
+    // get keystate
+    // SDL_Event e;
 
-    while (!quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = true;
-            }
-        }
+    // while (!quit)
+        // while (SDL_PollEvent(&e) != 0) {
+            // handle SDL quit etc
 
-        SDL_RenderClear(renderer);
-        // Draw something here if needed
-        SDL_RenderPresent(renderer);
-    }
+            // handle window resize events and update WindowManager with updateWindowSize (not setWindowSize())
 
-    close(window, renderer);
+            // handle a key toggle for scaling like:
+            //if (e.type == SDL_KEYDOWN) {
+            //    if (e.key.keysym.sym == SDLK_a) {
+            //        game.toggleScalingMode();
+            //    }
+            //}
+           
+        // game.step(keystate)
+        // update window with WindowManager
+
+    // close/destroy window with WindowManager
     return 0;
 }
