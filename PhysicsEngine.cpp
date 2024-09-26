@@ -1,126 +1,154 @@
 #include "PhysicsEngine.h"
-#include "WindowManager.h"
-#include "ControllableShape.h"
-#include <tuple>
+#include "NamedSprite.h"
+#include "GameWorld.h"
+#include "NamedSprite.h"
 #include <iostream>
 
-PhysicsEngine::PhysicsEngine(WindowManager& windowManager)
-    : windowManager(windowManager) {}
+PhysicsEngine::PhysicsEngine(double gravity, double pixelsPerMeter)
+    : gravity(gravity), pixelsPerMeter(pixelsPerMeter) {}
 
-SDL_Rect PhysicsEngine::makeRect(const Shape* shape) {
-    SDL_Rect rect = { static_cast<int>(shape->getX()), static_cast<int>(shape->getY()), shape->getWidth(), shape->getHeight() };
+// Create an SDL_Rect from PositionComponent
+SDL_Rect PhysicsEngine::makeRect(PositionComponent& position) {
+    SDL_Rect rect = {
+        static_cast<int>(position.getX()),
+        static_cast<int>(position.getY()),
+        position.getWidth(),
+        position.getHeight()
+    };
     return rect;
 }
 
-bool PhysicsEngine::checkShapeCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes) {
-    SDL_Rect rect = makeRect(shape);
-
-    // check collision with other shapes
-    for (const auto& pair : shapes) {
-        const Shape* otherShape = pair.second;
-        if (shape != otherShape) {
-            SDL_Rect otherRect = makeRect(otherShape);
+bool PhysicsEngine::checkCollisions(NamedSprite& sprite, GameState& gameState) {
+    PositionComponent* position = sprite.getPosition();
+    SDL_Rect rect = makeRect(*position);
+    for (auto& pair : gameState.getGameWorld().getObjects()) {
+        NamedSprite* otherSprite = pair.second;
+        if (sprite.getName() != otherSprite->getName()) {
+            SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
             if (checkCollision(rect, otherRect)) {
                 return true;
             }
         }
     }
-
-    // check collision with window bounds
-    return checkWindowBounds(shape);
-}
-
-bool PhysicsEngine::checkBottomCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes) {
-    SDL_Rect rect = makeRect(shape);
-    for (const auto& pair : shapes) {
-        const Shape* otherShape = pair.second;
-        if (shape != otherShape) {
-            SDL_Rect otherRect = makeRect(otherShape);
-            if (checkCollision(rect, otherRect)) {
-                //if (rect.y + rect.h <= otherRect.y) {
-                if ((rect.y + rect.h >= otherRect.y && rect.y + rect.h <= otherRect.y + 2.0f) &&  // Bottom is close to top
-                    (rect.x + rect.w > otherRect.x && rect.x < otherRect.x + otherRect.w)) {  // Horizontal overlap
-                    return true;
-                }
-            }
-        }
-    }
-    if (rect.y + rect.h >= windowManager.getWindowHeight()) {
-        return true;
-    }
     return false;
 }
 
-bool PhysicsEngine::checkSideCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes) {
-    SDL_Rect rect = makeRect(shape);
-    for (const auto& pair : shapes) {
-        const Shape* otherShape = pair.second;
-        if (shape != otherShape) {
-            SDL_Rect otherRect = makeRect(otherShape);
-            if (checkCollision(rect, otherRect)) {
-                // if the shape is colliding on the left or right side
-                if ((rect.x <= otherRect.x + otherRect.w && rect.x >= otherRect.x) ||  // left side
-                    (rect.x + rect.w >= otherRect.x && rect.x <= otherRect.x)) {       // right side
-                    return true;
-                }
+/*
+// Check for collisions using all four boundaries
+bool PhysicsEngine::checkCollisions(NamedSprite& sprite, GameState& gameState) {
+    return checkBottomCollision(sprite, gameState) ||
+        checkTopCollision(sprite, gameState) ||
+        checkLeftCollision(sprite, gameState) ||
+        checkRightCollision(sprite, gameState);
+}
+
+// TODO: position could in theory be null, need to add checks for this
+
+bool PhysicsEngine::checkBottomCollision(NamedSprite& sprite, GameState& gameState) {
+    PositionComponent* position = sprite.getPosition();
+    SDL_Rect rect = makeRect(*position);
+    for (auto& pair : gameState.getGameWorld().getObjects()) {
+        NamedSprite* otherSprite = pair.second;
+        if (sprite.getName() != otherSprite->getName()) {
+            SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
+            if (checkCollision(rect, otherRect) &&
+                rect.y + rect.h >= otherRect.y && rect.y + rect.h <= otherRect.y &&
+                rect.x + rect.w > otherRect.x && rect.x < otherRect.x + otherRect.w) {
+                std::cout << "bottom collision" << std::endl;
+                return true;
             }
         }
     }
-    if (rect.x <= 0 || rect.x + rect.w >= windowManager.getWindowWidth()) {
-        return true;
-    }
     return false;
+    //return rect.y + rect.h >= gameState.getGameWorld().getWorldHeight();
 }
 
-bool PhysicsEngine::checkTopBottomCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes) {
-    SDL_Rect rect = makeRect(shape);
-    for (const auto& pair : shapes) {
-        const Shape* otherShape = pair.second;
-        if (shape != otherShape) {
-            SDL_Rect otherRect = makeRect(otherShape);
-            if (checkCollision(rect, otherRect)) {
-                // if the top or bottom of the shape touches another shape
-                if ((rect.y <= otherRect.y + otherRect.h && rect.y >= otherRect.y) ||  // top collision
-                    (rect.y + rect.h >= otherRect.y && rect.y <= otherRect.y)) {       // bottom collision
-                    return true;
-                }
+bool PhysicsEngine::checkTopCollision(NamedSprite& sprite, GameState& gameState) {
+    PositionComponent* position = sprite.getPosition();
+    SDL_Rect rect = makeRect(*position);
+    for (auto& pair : gameState.getGameWorld().getObjects()) {
+        NamedSprite* otherSprite = pair.second;
+        if (sprite.getName() != otherSprite->getName()) {
+            SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
+            if (checkCollision(rect, otherRect) &&
+                rect.y <= otherRect.y + otherRect.h &&
+                rect.x + rect.w > otherRect.x && rect.x < otherRect.x + otherRect.w) {
+                std::cout << "top collision" << std::endl;
+                std::cout << "rect: " << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << std::endl;
+                std::cout << "other rect: " << otherRect.x << " " << otherRect.y << " " << otherRect.w << " " << otherRect.h << std::endl;
+                return true;
             }
         }
     }
-    if (rect.y <= 0.0f || rect.y + rect.h >= windowManager.getWindowHeight()) {
-        return true;
-    }
     return false;
+    //return rect.y <= 0;
 }
 
+bool PhysicsEngine::checkLeftCollision(NamedSprite& sprite, GameState& gameState) {
+    PositionComponent* position = sprite.getPosition();
+    SDL_Rect rect = makeRect(*position);
+    for (auto& pair : gameState.getGameWorld().getObjects()) {
+        NamedSprite* otherSprite = pair.second;
+        if (sprite.getName() != otherSprite->getName()) {
+            SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
+            if (checkCollision(rect, otherRect) &&
+                rect.x <= otherRect.x + otherRect.w) {
+                std::cout << "left collision" << std::endl;
+                std::cout << "rect: " << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << std::endl;
+                std::cout << "other rect: " << otherRect.x << " " << otherRect.y << " " << otherRect.w << " " << otherRect.h << std::endl;
+                return true;
+            }
+        }
+    }
+    return false;
+    //return rect.x <= 0;
+}
 
+bool PhysicsEngine::checkRightCollision(NamedSprite& sprite, GameState& gameState) {
+    PositionComponent* position = sprite.getPosition();
+    SDL_Rect rect = makeRect(*position);
+    for (auto& pair : gameState.getGameWorld().getObjects()) {
+        NamedSprite* otherSprite = pair.second;
+        if (sprite.getName() != otherSprite->getName()) {
+            SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
+            if (checkCollision(rect, otherRect) &&
+                rect.x + rect.w >= otherRect.x) {
+                std::cout << "right collision" << std::endl;
+                return true;
+            }
+        }
+    }
+    return false;
+    //return rect.x + rect.w >= gameState.getGameWorld().getWorldWidth();
+}
+*/
+
+// Check if two SDL_Rects are colliding
 bool PhysicsEngine::checkCollision(const SDL_Rect& a, const SDL_Rect& b) const {
     return SDL_HasIntersection(&a, &b);
 }
 
-bool PhysicsEngine::checkWindowBounds(const Shape* shape) const {
-    return shape->getX() < 0.0f || shape->getY() < 0.0f ||
-        shape->getX() + shape->getWidth() > windowManager.getWindowWidth() ||
-        shape->getY() + shape->getHeight() > windowManager.getWindowHeight();
+// Check if the position is out of world bounds
+bool PhysicsEngine::checkWorldBounds(NamedSprite& sprite, GameState& gameState) {
+    PositionComponent& position = *sprite.getPosition();
+    return position.getX() < 0 || position.getY() < 0 ||
+        position.getX() + position.getWidth() > gameState.getGameWorld().getWorldWidth() ||
+        position.getY() + position.getHeight() > gameState.getGameWorld().getWorldHeight();
 }
 
-float PhysicsEngine::getGravity() { return gravity; }
-void PhysicsEngine::setGravity(float newGravity) { gravity = newGravity; }
-
-void PhysicsEngine::applyGravity(Shape* shape, float dt) {
-    if (auto controllable = dynamic_cast<ControllableShape*>(shape)) {
-        std::tuple<float, float> speed = controllable->getSpeed();
-        float dx = std::get<0>(speed);
-        float dy = std::get<1>(speed);
-        float metersMovedY = dy * dt;
-        float moveY = metersMovedY * getPixelsPerMeter();
-
-        controllable->setY(controllable->getY() - moveY);
-        dy -= gravity * dt;
-        //std::cout << "dy under gravity: " << dy << " m/s" << std::endl;
-        controllable->setSpeed(dx, dy);
-    }
+// Apply gravity to the position
+void PhysicsEngine::applyGravity(NamedSprite& sprite, double dt) {
+    PositionComponent& position = *sprite.getPosition();
+    MovementComponent& movement = *sprite.getMovement();
+    double newY = position.getY() - movement.getDy() * pixelsPerMeter * dt;
+    double newDy = movement.getDy() - gravity * dt;
+    position.setY(newY);
+    movement.setDy(newDy);
 }
 
-float PhysicsEngine::getPixelsPerMeter() { return pixelsPerMeter; }
-void PhysicsEngine::setPixelsPerMeter(float newPixelsPerMeter) { pixelsPerMeter = newPixelsPerMeter; }
+// Getters and Setters for gravity and pixels-per-meter
+double PhysicsEngine::getGravity() const { return gravity; }
+void PhysicsEngine::setGravity(double newGravity) { gravity = newGravity; }
+
+double PhysicsEngine::getPixelsPerMeter() const { return pixelsPerMeter; }
+void PhysicsEngine::setPixelsPerMeter(double newPixelsPerMeter) { pixelsPerMeter = newPixelsPerMeter; }

@@ -2,34 +2,37 @@
 
 #include <unordered_map>
 #include <SDL.h>
+#include "PositionComponent.h"
+#include "GameState.h"
 
-#include "Shape.h"
-// #include "WindowManager.h"
-class WindowManager;
+class NamedSprite;
 
 class PhysicsEngine {
 public:
-    PhysicsEngine(WindowManager& windowManager);
+    PhysicsEngine(double gravity = 15.0, double pixelsPerMeter = 64.0);
 
-    bool checkShapeCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes);
-    bool checkBottomCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes);
-    bool checkSideCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes);
-    bool checkTopBottomCollision(const Shape* shape, const std::unordered_map<std::string, Shape*>& shapes);
+    // Check collisions
+    bool checkCollisions(NamedSprite& sprite, GameState& gameState);
+    //bool checkBottomCollision(NamedSprite& sprite, GameState& gameState);
+    //bool checkTopCollision(NamedSprite& sprite, GameState& gameState);
+    //bool checkLeftCollision(NamedSprite& sprite, GameState& gameState);
+    //bool checkRightCollision(NamedSprite& sprite, GameState& gameState);
 
-    void applyGravity(Shape* shape, float dt);
+    bool checkCollision(const SDL_Rect& a, const SDL_Rect& b) const;
+    bool checkWorldBounds(NamedSprite& sprite, GameState& gameState);
 
-    float getGravity();
-    void setGravity(float newGravity);
+    // Gravity related functions
+    void applyGravity(NamedSprite& sprite, double dt);
+    double getGravity() const;
+    void setGravity(double newGravity);
 
-    float getPixelsPerMeter();
-    void setPixelsPerMeter(float newPixelsPerMeter);
+    double getPixelsPerMeter() const;
+    void setPixelsPerMeter(double newPixelsPerMeter);
 
-    SDL_Rect makeRect(const Shape* shape);
+    SDL_Rect makeRect(PositionComponent& position);
 
 private:
-    float gravity = 15.0f;
-    float pixelsPerMeter = 64.0f;
-    WindowManager& windowManager;
-    bool checkCollision(const SDL_Rect& a, const SDL_Rect& b) const;
-    bool checkWindowBounds(const Shape* shape) const;
+    double gravity;
+    double pixelsPerMeter;
 };
+

@@ -1,10 +1,12 @@
 #include "WindowManager.h"
-#include "PhysicsEngine.h"
+#include "DrawerComponent.h"
+#include "GameWorld.h"
 
 // constructor
-WindowManager::WindowManager() : 
-    window(nullptr), renderer(nullptr), windowWidth(800), windowHeight(600), 
-    lastWindowWidth(windowWidth), lastWindowHeight(windowHeight), m_windowExists(false) {}
+WindowManager::WindowManager() :
+    window(nullptr), renderer(nullptr), windowWidth(800), windowHeight(600),
+    lastWindowWidth(windowWidth), lastWindowHeight(windowHeight),
+    m_windowExists(false), proportionalMode(false) {}
 
 // destructor
 WindowManager::~WindowManager() {
@@ -20,7 +22,6 @@ bool WindowManager::init(int screen_width, int screen_height) {
         return false;
     }
 
-    // address SDL bug where windowed display doesn't fit screen if exceeds or even if exactly matches desktop resolution
     SDL_DisplayMode desktopMode;
     if (SDL_GetDesktopDisplayMode(0, &desktopMode) != 0) {
         std::cerr << "Could not get desktop display mode! SDL_Error: " << SDL_GetError() << std::endl;
@@ -56,20 +57,19 @@ bool WindowManager::init(int screen_width, int screen_height) {
     return true;
 }
 
-void WindowManager::updateWindow(Game& game) {
-    PhysicsEngine physics = game.getPhysicsEngine();
-
+void WindowManager::updateWindow(GameState& gameState) {
     if (renderer) {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // blue background
         SDL_RenderClear(renderer);
 
-        const auto& shapes = game.getShapes();
-
-        for (const auto& pair : shapes) {
-            Shape* shape = pair.second;
-            shape->getDrawer().drawShape(game, shape, game.isProportionalMode());
+        // draw each sprite in the GameWorld
+        for (const auto& pair : gameState.getGameWorld().getObjects()) {
+            NamedSprite* sprite = pair.second;
+            DrawerComponent* drawer = sprite->getDrawer();
+            if (drawer) {
+                drawer->draw(*sprite, gameState, proportionalMode);
+            }
         }
-
         SDL_RenderPresent(renderer);
     }
 }
@@ -107,24 +107,9 @@ void WindowManager::setWindowSize(int width, int height) {
     SDL_SetWindowSize(window, windowWidth, windowHeight);
 }
 
-void WindowManager::updateWindowSize(int width, int height, Game& game) {
-    lastWindowWidth = windowWidth;
-    lastWindowHeight = windowHeight;
-    windowWidth = width;
-    windowHeight = height;
-
-    const auto& shapes = game.getShapes();
-    for (const auto& pair : shapes) {
-        Shape* shape = pair.second;
-
-        shape->getDrawer().prepareRelativePosition(shape, game);
-
-        if (game.isProportionalMode()) {
-            shape->getDrawer().prepareScaling(shape, game);
-        }
-    }
-
-    SDL_SetWindowSize(window, windowWidth, windowHeight);
+void WindowManager::updateWindowSize(int width, int height, GameState& gameState) {
+    setWindowSize(width, height);
+    updateWindow(gameState);
 }
 
 SDL_Window* WindowManager::getWindow() {
@@ -138,6 +123,19 @@ SDL_Renderer* WindowManager::getRenderer() {
 int WindowManager::getLastWindowWidth() const {
     return lastWindowWidth;
 }
+
 int WindowManager::getLastWindowHeight() const {
     return lastWindowHeight;
+}
+
+bool WindowManager::getProportionalMode() const {
+    return proportionalMode;
+}
+
+void WindowManager::setProportionalMode(bool mode) {
+    proportionalMode = mode;
+}
+
+void WindowManager::toggleProportionalMode() {
+    proportionalMode = !proportionalMode;
 }

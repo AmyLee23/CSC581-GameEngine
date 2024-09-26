@@ -2,36 +2,40 @@
 
 #include <SDL.h>
 #include <iostream>
-
-#include "Game.h"
+#include "GameState.h"
 
 class WindowManager {
 public:
     WindowManager();
     ~WindowManager();
 
-    bool init(int screen_width = 800, int screen_height = 600);  // init SDL window and renderer with optional width and height
-    void updateWindow(Game& game);  // update window with the current game state
-    void close();                   // close SDL window and renderer, release all resources
+    bool init(int screen_width = 800, int screen_height = 600);
+    void updateWindow(GameState& gameState);
+    void close();
 
-    bool windowExists() const;      // returns whether the window is created
+    bool windowExists() const;
 
     int getWindowWidth() const;
     int getWindowHeight() const;
     int getLastWindowWidth() const;
     int getLastWindowHeight() const;
     void setWindowSize(int width, int height);
-    void updateWindowSize(int width, int height, Game& game);
+    void updateWindowSize(int width, int height, GameState& gameState);
 
     SDL_Window* getWindow();
     SDL_Renderer* getRenderer();
 
+    bool getProportionalMode() const;
+    void setProportionalMode(bool mode);
+    void toggleProportionalMode();
+
 private:
-    SDL_Window* window;             // SDL window pointer
-    SDL_Renderer* renderer;         // SDL renderer pointer
+    SDL_Window* window;
+    SDL_Renderer* renderer;
     int windowWidth;
     int windowHeight;
     int lastWindowWidth;
     int lastWindowHeight;
-    bool m_windowExists;            // if window exists
+    bool proportionalMode;
+    bool m_windowExists;
 };

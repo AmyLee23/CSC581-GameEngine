@@ -35,9 +35,9 @@
 .vs/
 
 # Josh Specific
-game-engine.sln
-game-engine.vcxproj
-game-engine.vcxproj.filters
+# game-engine.sln
+# game-engine.vcxproj
+# game-engine.vcxproj.filters
 game-engine.vcxproj.user
 game-engine/
 x64/
