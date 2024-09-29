@@ -15,4 +15,5 @@
 
 int main(int argc, char* args[]) {
 	// add simplest code for starting a server
+	return 0;
 }
