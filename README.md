@@ -20,7 +20,11 @@ To build and run the project,
 Game Controls:
 
 move left: left arrow
+
 move right: right arrow
+
 jump: space bar
+
 quit:
+
 proportional toggle:
