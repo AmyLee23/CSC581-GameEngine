@@ -13,17 +13,6 @@
 
 #include <thread>
 
-double adjustTimeScale(double currentScale, double adjustment, double minScale, double maxScale) {
-    double newScale = currentScale + adjustment;
-    if (newScale > maxScale) {
-        return maxScale;
-    }
-    if (newScale < minScale) {
-        return minScale;
-    }
-    return newScale;
-}
-
 int main(int argc, char* args[]) {
     // Game Initialization
     WindowManager windowManager;
