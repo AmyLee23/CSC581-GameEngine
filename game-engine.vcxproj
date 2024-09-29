@@ -125,6 +125,7 @@
     <ClCompile Include="BouncingMovement.cpp" />
     <ClCompile Include="ControllableFlyer.cpp" />
     <ClCompile Include="ControllableJumper.cpp" />
+    <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="main.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="ControllableFlyer.h" />
     <ClInclude Include="ControllableJumper.h" />
     <ClInclude Include="DrawerComponent.h" />
+    <ClInclude Include="GameInput.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="InputComponent.h" />

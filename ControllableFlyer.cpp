@@ -31,7 +31,7 @@ void ControllableFlyer::handleInput(const Uint8* keystate, NamedSprite& sprite, 
         position->setY(position->getY() + moveY);
     }
     if (position->getY() < 0 || position->getY() + position->getHeight() > gameWorld.getWorldHeight() ||
-        physics.checkCollisions(sprite, gameState)) { // physics.checkTopCollision(sprite, gameState) || physics.checkBottomCollision(sprite, gameState)
+        physics.checkCollisions(sprite, gameState)) {
         // Revert Y position if collision occurs
         position->setY(lastY);
     }
@@ -44,7 +44,7 @@ void ControllableFlyer::handleInput(const Uint8* keystate, NamedSprite& sprite, 
         position->setX(position->getX() + moveX);
     }
     if (position->getX() < 0 || position->getX() + position->getWidth() > gameWorld.getWorldWidth() ||
-        physics.checkCollisions(sprite, gameState)) { // physics.checkLeftCollision(sprite, gameState) || physics.checkRightCollision(sprite, gameState)
+        physics.checkCollisions(sprite, gameState)) {
         // Revert X position if collision occurs
         position->setX(lastX);
     }

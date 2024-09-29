@@ -28,7 +28,7 @@ void BouncingMovement::move(NamedSprite& sprite, GameState& gameState, double dt
         //std::cout << "x collision world: " << (lastX + moveX) << std::endl;
         dx = -dx;
         position->setX(lastX);
-    } else if (physics.checkCollisions(sprite, gameState)) { // physics.checkLeftCollision(sprite, gameState) || physics.checkRightCollision(sprite, gameState)
+    } else if (physics.checkCollisions(sprite, gameState)) {
         //std::cout << "x collision shape: " << (lastX + moveX) << std::endl;
         dx = -dx;  // Bounce horizontally
         position->setX(lastX);
@@ -40,7 +40,7 @@ void BouncingMovement::move(NamedSprite& sprite, GameState& gameState, double dt
         // If collision occurs on the top or bottom side, reverse vertical velocity (bounce)
         dy = -dy;
         position->setY(lastY);
-    } else if (physics.checkCollisions(sprite, gameState)) { // physics.checkTopCollision(sprite, gameState) || physics.checkBottomCollision(sprite, gameState)
+    } else if (physics.checkCollisions(sprite, gameState)) {
         dy = -dy;  // Bounce vertically
         position->setY(lastY);
     }

@@ -13,7 +13,6 @@ private:
 public:
     ControllableFlyer(double dx, double dy);
 
-    // void handleInput(const Uint8* keystate, PositionComponent* position, GameState& gameState, double dt) override;
     void handleInput(const Uint8* keystate, NamedSprite& sprite, GameState& gameState, double dt) override;
 
     double getDx() const;

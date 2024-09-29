@@ -48,10 +48,10 @@
     <ClCompile Include="ControllableFlyer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ControllableJumper.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="ControllableJumper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,6 +96,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ControllableFlyer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllableJumper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
