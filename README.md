@@ -14,10 +14,13 @@ To build and run the project,
 4. The default view of a local folder should be folder view
 5. In Solution Exporer (right or left side), select "Switch between solutions and available views"
 6. There will be a [NAME].sln item and a folder item. Double click the `.sln` item.
-7. Select Build > Build Solution
-8. Then Run it
+1. Double check that VS is configured for Debug x64
+7. Right click GameEngineLib and select Build
+1. Right click SimpleMain and select 'Select as Startup Project'
+7. Right click SimpleMain again and select Build
+8. Then use VS to run in non-debugger mode (hollow green arrow, not solid)
 
-Game Controls:
+Default Game Controls:
 
 move left: left arrow
 
@@ -25,6 +28,10 @@ move right: right arrow
 
 jump: space bar
 
-quit:
+quit: q
 
-proportional toggle:
+proportional toggle: s
+
+pause/unpause: p
+
+speed up / slow down: + / -

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "StandardPosition.h"
 
 StandardPosition::StandardPosition(double x, double y, int width, int height)

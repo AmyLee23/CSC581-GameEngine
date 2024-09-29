@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "SimpleRectDrawer.h"
 #include "NamedSprite.h"
 #include "PositionComponent.h"

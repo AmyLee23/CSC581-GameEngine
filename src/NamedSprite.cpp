@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "NamedSprite.h"
 
 NamedSprite::NamedSprite(const std::string& name, PositionComponent* position, MovementComponent* movement,
