@@ -81,11 +81,12 @@ int main(int argc, char* args[]) {
     SDL_Event e;
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
-    int targetFPS = 120;
+    int targetFPS = 120; // beware making this any lower than 60, as half speed/framerate will be buggy
     int64_t timePerFrame = 1000 / targetFPS;
 
     while (!quit) {
         int64_t frameStartTime = globalTimeline.getTime();
+        int localFPS = targetFPS;
 
         while (SDL_PollEvent(&e) != 0) {
             // SDL quit
@@ -94,7 +95,10 @@ int main(int argc, char* args[]) {
             }
             // handle game input
             else if (e.type == SDL_KEYDOWN) {
-                quit = gameInput.handleInput(keystate, gameState);
+                auto pair = gameInput.handleInputFPS(keystate, gameState, targetFPS);
+                quit = pair.first;
+                localFPS = pair.second;
+                timePerFrame = 1000 / localFPS;
             }
             // window resize
             if (e.type == SDL_WINDOWEVENT) {

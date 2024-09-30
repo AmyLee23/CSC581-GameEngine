@@ -36,4 +36,6 @@ public:
     void setSpeedDownKey(SDL_Scancode key);
 
     bool handleInput(const Uint8* keystate, GameState& gameState);
+    std::pair<bool, int> handleInputFPS(const Uint8* keystate, GameState& gameState, int targetFps); // modifies frame rate when speeding up or slowing down
+
 };

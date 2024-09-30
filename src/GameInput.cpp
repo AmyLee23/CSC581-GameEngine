@@ -6,7 +6,8 @@
 #include "GameWorld.h"
 #include "NamedSprite.h"
 
-// Constructor with default keys
+#include <iostream>
+
 GameInput::GameInput()
     : pause_key(SDL_SCANCODE_P),
     scaling_key(SDL_SCANCODE_S),
@@ -100,4 +101,13 @@ bool GameInput::handleInput(const Uint8* keystate, GameState& gameState) {
     }
 
     return quit;
+}
+
+std::pair<bool, int> GameInput::handleInputFPS(const Uint8* keystate, GameState& gameState, int targetFps) {
+    NamedSprite* playerSprite = gameState.getGameWorld().getObjectByName(player_name);
+    Timeline& playerTimeline = playerSprite->getTimeline();
+    bool quit = handleInput(keystate, gameState);
+    int newFps = static_cast<int>(playerTimeline.getTimeScale() * targetFps);
+    //std::cout << "timescale: " << playerTimeline.getTimeScale() << " newFps: " << newFps << std::endl;
+    return { quit, newFps };
 }
