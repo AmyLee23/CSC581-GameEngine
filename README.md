@@ -2,7 +2,7 @@
 Group game engine for CSC 581
 
 # How to Run the Submissoin
-Must have a Windows 10/11 environment with Visual Studio 2022 for C++ projects and SDL2 added to the environment PATH variable.
+Must have a Windows 10/11 environment with Visual Studio 2022 for C++ projects. SDL2's dll and libzmq's dll should be added to the environment PATH variable.
 
 Everything is in one Source.zip file.
 
