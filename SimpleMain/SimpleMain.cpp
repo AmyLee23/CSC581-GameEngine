@@ -67,6 +67,7 @@ int main(int argc, char* args[]) {
     Timeline localTimeline4(&globalTimeline, 10);
     NamedSprite* jumper = new NamedSprite("jumper", jp, jmi, jmi, jd, localTimeline4);
     gameWorld.addObject(jumper);
+    gameInput.setPlayerName("jumper"); // THIS IS A MUST OR SPEEDING/SLOWING WILL NOT WORK
 
     bool quit = false;
     SDL_Event e;

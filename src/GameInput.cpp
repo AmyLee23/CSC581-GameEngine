@@ -6,19 +6,24 @@
 #include "GameWorld.h"
 #include "NamedSprite.h"
 
+// Constructor with default keys
 GameInput::GameInput()
     : pause_key(SDL_SCANCODE_P),
     scaling_key(SDL_SCANCODE_S),
     quit_key(SDL_SCANCODE_Q),
     speedUp_key(SDL_SCANCODE_EQUALS),
-    speedDown_key(SDL_SCANCODE_MINUS) {}
+    speedDown_key(SDL_SCANCODE_MINUS),
+    player_name("Player")  // default player name
+{}
 
 SDL_Scancode GameInput::getPauseKey() const { return pause_key; }
 SDL_Scancode GameInput::getScalingKey() const { return scaling_key; }
 SDL_Scancode GameInput::getQuitKey() const { return quit_key; }
 SDL_Scancode GameInput::getSpeedUpKey() const { return speedUp_key; }
 SDL_Scancode GameInput::getSpeedDownKey() const { return speedDown_key; }
+const std::string& GameInput::getPlayerName() const { return player_name; }
 
+void GameInput::setPlayerName(const std::string& name) { player_name = name; }
 void GameInput::setPauseKey(SDL_Scancode key) { pause_key = key; }
 void GameInput::setScalingKey(SDL_Scancode key) { scaling_key = key; }
 void GameInput::setQuitKey(SDL_Scancode key) { quit_key = key; }
@@ -36,14 +41,36 @@ double GameInput::adjustTimeScale(double currentScale, double adjustment, double
     return newScale;
 }
 
+// private helper function to adjust global time scale
+void GameInput::adjustGlobalTime(GameState& gameState, double adjustment) {
+    Timeline& globalTimeline = gameState.getTimeline();
+    GameWorld& gameWorld = gameState.getGameWorld();
+
+    double newGlobalTimeScale = adjustTimeScale(globalTimeline.getTimeScale(), adjustment, 0.5, 2.0);
+    globalTimeline.setTimeScale(newGlobalTimeScale);
+
+    for (auto& pair : gameWorld.getObjects()) {
+        NamedSprite* sprite = pair.second;
+        Timeline& spriteTimeline = sprite->getTimeline();
+        double newSpriteTimeScale = adjustTimeScale(spriteTimeline.getTimeScale(), adjustment, 0.5, 2.0);
+        spriteTimeline.setTimeScale(newSpriteTimeScale);
+    }
+}
+
 bool GameInput::handleInput(const Uint8* keystate, GameState& gameState) {
     bool quit = false;
+
+    // Handle quit
     if (keystate[quit_key]) {
         quit = true;
     }
+
+    // Toggle scaling
     if (keystate[scaling_key]) {
         gameState.getWindowManager().toggleProportionalMode();
     }
+
+    // Pause or unpause the game
     if (keystate[pause_key]) {
         Timeline& globalTimeline = gameState.getTimeline();
         if (globalTimeline.isPaused()) {
@@ -53,6 +80,8 @@ bool GameInput::handleInput(const Uint8* keystate, GameState& gameState) {
             globalTimeline.pause();
         }
     }
+
+    // Adjust time scale for the player sprite
     double adjustment = 0.0;
     if (keystate[speedUp_key]) {
         adjustment = 0.1;
@@ -60,17 +89,15 @@ bool GameInput::handleInput(const Uint8* keystate, GameState& gameState) {
     else if (keystate[speedDown_key]) {
         adjustment = -0.1;
     }
+
     if (adjustment != 0.0) {
-        Timeline& globalTimeline = gameState.getTimeline();
-        GameWorld& gameWorld = gameState.getGameWorld();
-        double newGlobalTimeScale = adjustTimeScale(globalTimeline.getTimeScale(), adjustment, 0.5, 2.0);
-        globalTimeline.setTimeScale(newGlobalTimeScale);
-        for (auto& pair : gameWorld.getObjects()) {
-            NamedSprite* sprite = pair.second;
-            Timeline& spriteTimeline = sprite->getTimeline();
-            double newSpriteTimeScale = adjustTimeScale(spriteTimeline.getTimeScale(), adjustment, 0.5, 2.0);
-            spriteTimeline.setTimeScale(newSpriteTimeScale);
+        NamedSprite* playerSprite = gameState.getGameWorld().getObjectByName(player_name);
+        if (playerSprite) {
+            Timeline& playerTimeline = playerSprite->getTimeline();
+            double newPlayerTimeScale = adjustTimeScale(playerTimeline.getTimeScale(), adjustment, 0.5, 2.0);
+            playerTimeline.setTimeScale(newPlayerTimeScale);
         }
     }
+
     return quit;
 }
