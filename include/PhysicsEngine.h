@@ -9,7 +9,7 @@ class NamedSprite;
 
 class PhysicsEngine {
 public:
-    PhysicsEngine(double gravity = 15.0, double pixelsPerMeter = 64.0);
+    PhysicsEngine(double gravity = 15.0, double pixelsPerMeter = 64.0, double maxPixelMovement = 20.0);
 
     // Check collisions
     bool checkCollisions(NamedSprite& sprite, GameState& gameState);
@@ -23,16 +23,20 @@ public:
 
     // Gravity related functions
     void applyGravity(NamedSprite& sprite, double dt);
+    void applyGravityDy(NamedSprite& sprite, double dt);
     double getGravity() const;
     void setGravity(double newGravity);
 
     double getPixelsPerMeter() const;
     void setPixelsPerMeter(double newPixelsPerMeter);
+    double getMaxPixelMovement() const;
+    void setMaxPixelMovement(double newMaxPixelMovement);
 
     SDL_Rect makeRect(PositionComponent& position);
 
 private:
     double gravity;
     double pixelsPerMeter;
+    double maxPixelMovement;
 };
 

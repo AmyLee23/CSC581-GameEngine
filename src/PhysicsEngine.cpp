@@ -5,8 +5,8 @@
 #include "NamedSprite.h"
 #include <iostream>
 
-PhysicsEngine::PhysicsEngine(double gravity, double pixelsPerMeter)
-    : gravity(gravity), pixelsPerMeter(pixelsPerMeter) {}
+PhysicsEngine::PhysicsEngine(double gravity, double pixelsPerMeter, double maxPixelMovement)
+    : gravity(gravity), pixelsPerMeter(pixelsPerMeter), maxPixelMovement(maxPixelMovement) {}
 
 // Create an SDL_Rect from PositionComponent
 SDL_Rect PhysicsEngine::makeRect(PositionComponent& position) {
@@ -57,9 +57,20 @@ void PhysicsEngine::applyGravity(NamedSprite& sprite, double dt) {
     movement.setDy(newDy);
 }
 
+// Apply gravity to dy only
+void PhysicsEngine::applyGravityDy(NamedSprite& sprite, double dt) {
+    MovementComponent& movement = *sprite.getMovement();
+    double newDy = movement.getDy() - gravity * dt;
+    movement.setDy(newDy);
+}
+
+
 // Getters and Setters for gravity and pixels-per-meter
 double PhysicsEngine::getGravity() const { return gravity; }
 void PhysicsEngine::setGravity(double newGravity) { gravity = newGravity; }
 
 double PhysicsEngine::getPixelsPerMeter() const { return pixelsPerMeter; }
 void PhysicsEngine::setPixelsPerMeter(double newPixelsPerMeter) { pixelsPerMeter = newPixelsPerMeter; }
+
+double PhysicsEngine::getMaxPixelMovement() const { return maxPixelMovement;  }
+void PhysicsEngine::setMaxPixelMovement(double newMaxPixelMovement) { maxPixelMovement = newMaxPixelMovement; }

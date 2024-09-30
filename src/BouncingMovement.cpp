@@ -17,6 +17,69 @@ void BouncingMovement::move(NamedSprite& sprite, GameState& gameState, double dt
     double metersMovedY = dy * dt;
     double moveX = metersMovedX * physics.getPixelsPerMeter();
     double moveY = metersMovedY * physics.getPixelsPerMeter();
+
+    double maxMove = physics.getMaxPixelMovement(); // max movement increment
+
+    // calculate the number of steps needed to break down the movement
+    int stepsX = static_cast<int>(std::ceil(std::abs(moveX) / maxMove));
+    int stepsY = static_cast<int>(std::ceil(std::abs(moveY) / maxMove));
+
+    // iterate over greater number
+    int totalSteps = std::max(stepsX, stepsY);
+
+    // incremental movement for each step
+    double incrementX = moveX / totalSteps;
+    double incrementY = moveY / totalSteps;
+
+    double lastX = position->getX();
+    double lastY = position->getY();
+
+    for (int step = 0; step < totalSteps; ++step) {
+        // try incremental x movement
+        position->setX(lastX + incrementX);
+
+        if (position->getX() < 0 || position->getX() + position->getWidth() > gameWorld.getWorldWidth()) {
+            // reverse horizontal velocity (bounce)
+            dx = -dx;
+            position->setX(lastX);  // reset to last valid position
+        }
+        else if (physics.checkCollisions(sprite, gameState)) {
+            dx = -dx;
+            position->setX(lastX);  // reset to last valid position
+        }
+        else {
+            lastX = position->getX();  // update lastX to the new valid position
+        }
+
+        // try incremental y movement
+        position->setY(lastY + incrementY);
+
+        if (position->getY() < 0 || position->getY() + position->getHeight() > gameWorld.getWorldHeight()) {
+            // reverse vertical velocity (bounce)
+            dy = -dy;
+            position->setY(lastY);  // reset to last valid position
+        }
+        else if (physics.checkCollisions(sprite, gameState)) {
+            dy = -dy;
+            position->setY(lastY);  // reset to last valid position
+        }
+        else {
+            lastY = position->getY();  // update lastY to the new valid position
+        }
+    }
+}
+
+
+/*
+void BouncingMovement::move(NamedSprite& sprite, GameState& gameState, double dt) {
+    PositionComponent* position = sprite.getPosition();
+    PhysicsEngine& physics = gameState.getPhysicsEngine();
+    GameWorld& gameWorld = gameState.getGameWorld();
+
+    double metersMovedX = dx * dt;
+    double metersMovedY = dy * dt;
+    double moveX = metersMovedX * physics.getPixelsPerMeter();
+    double moveY = metersMovedY * physics.getPixelsPerMeter();
     //std::cout << "Move x: " << moveX << std::endl;
     double lastX = position->getX();
     double lastY = position->getY();
@@ -45,20 +108,10 @@ void BouncingMovement::move(NamedSprite& sprite, GameState& gameState, double dt
         dy = -dy;  // Bounce vertically
         position->setY(lastY);
     }
-}
+} */
 
-double BouncingMovement::getDx() const {
-    return dx;
-}
+double BouncingMovement::getDx() const { return dx; }
+double BouncingMovement::getDy() const { return dy; }
 
-double BouncingMovement::getDy() const {
-    return dy;
-}
-
-void BouncingMovement::setDx(double dx) {
-    this->dx = dx;
-}
-
-void BouncingMovement::setDy(double dy) {
-    this->dy = dy;
-}
+void BouncingMovement::setDx(double dx) { this->dx = dx; }
+void BouncingMovement::setDy(double dy) { this->dy = dy; }
