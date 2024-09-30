@@ -42,3 +42,20 @@ void GameWorld::removeObject(const std::string& name) {
         namedObjects.erase(it);
     }
 }
+
+void GameWorld::addJumper(const std::string& clientId, NamedSprite* jumper) {
+    jumpers[clientId] = jumper;
+    /*auto it = namedObjects.find(jumper->getName());
+    if (it != namedObjects.end()) {
+        namedObjects[jumper->getName()] = jumper;
+    }*/
+}
+
+NamedSprite* GameWorld::getJumper(const std::string& clientId) {
+    auto it = jumpers.find(clientId);
+    if (it != jumpers.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+

@@ -27,6 +27,7 @@ public:
     std::string getName() const;
     Timeline& getTimeline();
     PositionComponent* getPosition() const;
+    void setPosition(PositionComponent* newPosition);
     MovementComponent* getMovement() const;
     InputComponent* getInput() const;
     DrawerComponent* getDrawer() const;

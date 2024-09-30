@@ -8,7 +8,8 @@ class GameWorld {
 private:
     int worldHeight;
     int worldWidth;
-    std::unordered_map<std::string, NamedSprite*> namedObjects; 
+    std::unordered_map<std::string, NamedSprite*> namedObjects;
+    std::unordered_map<std::string, NamedSprite*> jumpers;
 
 public:
     GameWorld();
@@ -21,6 +22,8 @@ public:
     void addObject(NamedSprite* sprite);
     void removeObject(const std::string& name);
 
+    void addJumper(const std::string& clientId, NamedSprite* jumper);
+    NamedSprite* getJumper(const std::string& clientId);
 
     int getWorldWidth() const;
     int getWorldHeight() const;

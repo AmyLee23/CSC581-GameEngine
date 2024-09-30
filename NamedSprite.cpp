@@ -7,7 +7,7 @@ NamedSprite::NamedSprite(const std::string& name, PositionComponent* position, M
 NamedSprite::~NamedSprite() {
     delete position;
     delete movement;
-    delete input;
+    //delete input;
     delete drawer;
 }
 
@@ -21,6 +21,10 @@ Timeline& NamedSprite::getTimeline() {
 
 PositionComponent* NamedSprite::getPosition() const {
     return position;
+}
+
+void NamedSprite::setPosition(PositionComponent* newPosition) {
+    position = newPosition;
 }
 
 MovementComponent* NamedSprite::getMovement() const {
