@@ -13,11 +13,11 @@ To build and run the project,
 3. In Visual Studio, choose open a local folder and select the folder you just extracted
 4. The default view of a local folder should be folder view
 5. In Solution Exporer (right or left side), select "Switch between solutions and available views"
-6. There will be a [NAME].sln item and a folder item. Double click the `.sln` item.
+6. There will be a `game-engine.sln` item and a folder item. Double click the `.sln` item.
 1. Double check that VS is configured for Debug x64
-7. Right click GameEngineLib and select Build
-1. Right click SimpleMain and select 'Select as Startup Project'
-7. Right click SimpleMain again and select Build
+7. Right click `GameEngineLib` and select Build
+1. Right click `MultiThreadedMain` and select 'Select as Startup Project'
+7. Right click `MultiThreadedMain` again and select Build
 8. Then use VS to run in non-debugger mode (hollow green arrow, not solid)
 
 Default Game Controls:
