@@ -29,6 +29,7 @@ void SimpleRectDrawer::draw(double x, double y, int width, int height, SDL_Rende
 }
 
 void SimpleRectDrawer::draw(NamedSprite& sprite, GameState& gameState, bool scaling) {
+    std::lock_guard<std::mutex> lock(mtx);
     SDL_Renderer* renderer = gameState.getWindowManager().getRenderer();
 
     PositionComponent* position = sprite.getPosition();

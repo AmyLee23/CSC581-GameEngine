@@ -1,19 +1,19 @@
 #pragma once
 
 #include "MovementComponent.h"
-// #include "PositionComponent.h"
 #include "GameState.h"
 #include <cmath>
+#include <mutex>
 
 class BouncingMovement : public MovementComponent {
 private:
+    std::mutex mtx;
     double dx;  // Movement in x direction (velocity)
     double dy;  // Movement in y direction (velocity)
 
 public:
     BouncingMovement(double dx, double dy);
 
-    /*void move(PositionComponent* position, GameState& gameState, double dt) override;*/
     void move(NamedSprite& sprite, GameState& gameState, double dt) override;
 
     double getDx() const override;

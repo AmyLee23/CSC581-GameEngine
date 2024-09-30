@@ -1,12 +1,14 @@
 #pragma once
 
 #include "PositionComponent.h"
+#include <mutex>
 
 class StandardPosition : public PositionComponent {
 private:
     double x, y;
     int width, height;
     double lastX, lastY;
+    std::mutex mtx;
 
 public:
     StandardPosition(double x, double y, int width, int height);

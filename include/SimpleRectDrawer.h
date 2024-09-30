@@ -1,12 +1,14 @@
 #pragma once
 
 #include "DrawerComponent.h"
+#include <mutex>
 #include <SDL.h>
 #include <utility>
 
 class SimpleRectDrawer : public DrawerComponent {
 private:
     SDL_Color color;
+    std::mutex mtx;
 
 public:
     SimpleRectDrawer(SDL_Color color);

@@ -9,6 +9,8 @@ BouncingMovement::BouncingMovement(double dx, double dy)
     : dx(dx), dy(dy) {}
 
 void BouncingMovement::move(NamedSprite& sprite, GameState& gameState, double dt) {
+    std::lock_guard<std::mutex> lock(mtx);
+
     PositionComponent* position = sprite.getPosition();
     PhysicsEngine& physics = gameState.getPhysicsEngine();
     GameWorld& gameWorld = gameState.getGameWorld();

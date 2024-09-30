@@ -21,6 +21,7 @@ void ControllableJumper::setIsJumping(bool isJumping) { this->isJumping = isJump
 void ControllableJumper::setIsOnGround(bool isOnGround) { this->isOnGround = isOnGround; }
 
 void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double dt) {
+    std::lock_guard<std::mutex> lock(mtx);
     PositionComponent& position = *sprite.getPosition();
     PhysicsEngine& physics = gameState.getPhysicsEngine();
 
@@ -56,6 +57,7 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
 }
 
 void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite, GameState& gameState, double dt) {
+    std::lock_guard<std::mutex> lock(mtx);
     PositionComponent& position = *sprite.getPosition();
     GameWorld& gameWorld = gameState.getGameWorld();
     PhysicsEngine& physics = gameState.getPhysicsEngine();

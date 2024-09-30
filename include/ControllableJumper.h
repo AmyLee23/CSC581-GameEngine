@@ -2,6 +2,7 @@
 
 #include "MovementComponent.h"
 #include "InputComponent.h"
+#include <mutex>
 
 class ControllableJumper : public MovementComponent, public InputComponent {
 private:
@@ -10,6 +11,7 @@ private:
     bool isJumping;      // Indicates if the sprite is currently jumping
     bool isOnGround;     // Indicates if the sprite is on the ground
     double jumpVelocity;  // The velocity when jumping
+    std::mutex mtx;
 
 public:
     ControllableJumper(double dx, double dy, double jumpVelocity);
