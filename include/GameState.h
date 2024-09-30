@@ -19,6 +19,10 @@ public:
     ~GameState();
 
     void step(const Uint8* keystate);
+    // step split up (for multi threading)
+    void stepInput(const Uint8* keystate);
+    void stepMovement();
+
 
     Timeline& getTimeline();
     GameWorld& getGameWorld();

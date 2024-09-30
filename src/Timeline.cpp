@@ -3,7 +3,7 @@
 #include <iostream>
 
 Timeline::Timeline(Timeline* anchor, int64_t tic)
-    : anchor(anchor), tic(tic), paused(false), elapsed_paused_time(0), last_time(0), time_scale(1.0), last_paused_time(0) {
+    : anchor(anchor), tic(tic), paused(false), elapsed_paused_time(0), last_time(0), time_scale(1.0), last_paused_time(0), last_input_time(0), last_movement_time(0) {
 
     // Get the current time in milliseconds
     auto now = Clock::now();
@@ -77,12 +77,49 @@ int64_t Timeline::getTime() {
     return active_time;
 }
 
+double Timeline::getMovementDt() {
+    if (!paused) {
+        std::lock_guard<std::mutex> lock(dt_mtx);
+        int64_t time = getTime();
+        int64_t dt = time - last_movement_time;
+        double dt_scaled = static_cast<double>(dt) * time_scale;
+        last_movement_time = time;
+        return dt_scaled < 0 ? 0 : dt_scaled;
+    }
+    return 0;
+}
+
+double Timeline::getInputDt() {
+    if (!paused) {
+        std::lock_guard<std::mutex> lock(dt_mtx);
+        int64_t time = getTime();
+        int64_t dt = time - last_input_time;
+        double dt_scaled = static_cast<double>(dt) * time_scale;
+        last_input_time = time;
+        return dt_scaled < 0 ? 0 : dt_scaled;
+    }
+    return 0;
+}
+
 double Timeline::getDt() {
     if (!paused) {
+        std::lock_guard<std::mutex> lock(dt_mtx);
         int64_t time = getTime();
         int64_t dt = time - last_time;
         double dt_scaled = static_cast<double>(dt) * time_scale;
         last_time = time;
+        return dt_scaled < 0 ? 0 : dt_scaled;
+    }
+    return 0;
+}
+
+double Timeline::getDt(int64_t& custom_last_time) {
+    if (!paused) {
+        std::lock_guard<std::mutex> lock(dt_mtx);
+        int64_t time = getTime();
+        int64_t dt = time - custom_last_time;
+        double dt_scaled = static_cast<double>(dt) * time_scale;
+        custom_last_time = time;
         return dt_scaled < 0 ? 0 : dt_scaled;
     }
     return 0;
