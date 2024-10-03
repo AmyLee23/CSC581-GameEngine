@@ -14,7 +14,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-# *.dll
+*.dll
 
 # Fortran module files
 *.mod
@@ -24,7 +24,7 @@
 *.lai
 *.la
 *.a
-#*.lib
+*.lib
 
 # Executables
 *.exe
@@ -38,12 +38,8 @@
 # game-engine.sln
 # game-engine.vcxproj
 # game-engine.vcxproj.filters
-# game-engine.vcxproj.user
-# game-engine/
-# private_main.cpp
-
-# Static Library Setup
+game-engine.vcxproj.user
+game-engine/
 x64/
-*.user
-!SDL2-2.30.6/lib/x64/
+private_main.cpp
 
