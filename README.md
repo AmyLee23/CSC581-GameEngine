@@ -16,9 +16,12 @@ To build and run the project,
 6. There will be a `game-engine.sln` item and a folder item. Double click the `.sln` item.
 1. Double check that VS is configured for Debug x64
 7. Right click `GameEngineLib` and select Build
-1. Right click `MultiThreadedMain` and select 'Select as Startup Project'
-7. Right click `MultiThreadedMain` again and select Build
-8. Then use VS to run in non-debugger mode (hollow green arrow, not solid)
+1. Right click `Server` and select Build
+1. Right click `Client` and select Build
+1. Right click `Server` and select 'Select as Startup Project'
+1. Run in Non-Debugger Mode, this starts the server
+7. Right click `Client` and select 'Select as Startup Project'
+8. Run in non-debugger mode 3 times to add 3 clients. (Do not spam run, server needs time to establish connection with each client)
 
 Default Game Controls:
 
