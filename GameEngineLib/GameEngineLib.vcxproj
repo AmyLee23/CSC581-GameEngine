@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Desktop\CSC 581\csc581-engine-josh-composition-refactor\PeerNetwork.h" />
     <ClInclude Include="..\include\BouncingMovement.h" />
     <ClInclude Include="..\include\ControllableFlyer.h" />
     <ClInclude Include="..\include\ControllableJumper.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Desktop\CSC 581\csc581-engine-josh-composition-refactor\PeerNetwork.cpp" />
     <ClCompile Include="..\src\BouncingMovement.cpp" />
     <ClCompile Include="..\src\ControllableFlyer.cpp" />
     <ClCompile Include="..\src\ControllableJumper.cpp" />
