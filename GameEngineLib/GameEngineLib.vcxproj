@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Desktop\CSC 581\csc581-engine-josh-composition-refactor\PeerNetwork.h" />
     <ClInclude Include="..\include\BouncingMovement.h" />
     <ClInclude Include="..\include\ControllableFlyer.h" />
     <ClInclude Include="..\include\ControllableJumper.h" />
@@ -160,6 +159,7 @@
     <ClInclude Include="..\include\JServer.h" />
     <ClInclude Include="..\include\MovementComponent.h" />
     <ClInclude Include="..\include\NamedSprite.h" />
+    <ClInclude Include="..\include\PeerNetwork.h" />
     <ClInclude Include="..\include\PhysicsEngine.h" />
     <ClInclude Include="..\include\PositionComponent.h" />
     <ClInclude Include="..\include\SimpleRectDrawer.h" />
@@ -170,7 +170,6 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Desktop\CSC 581\csc581-engine-josh-composition-refactor\PeerNetwork.cpp" />
     <ClCompile Include="..\src\BouncingMovement.cpp" />
     <ClCompile Include="..\src\ControllableFlyer.cpp" />
     <ClCompile Include="..\src\ControllableJumper.cpp" />
@@ -180,6 +179,7 @@
     <ClCompile Include="..\src\JClient.cpp" />
     <ClCompile Include="..\src\JServer.cpp" />
     <ClCompile Include="..\src\NamedSprite.cpp" />
+    <ClCompile Include="..\src\PeerNetwork.cpp" />
     <ClCompile Include="..\src\PhysicsEngine.cpp" />
     <ClCompile Include="..\src\SimpleRectDrawer.cpp" />
     <ClCompile Include="..\src\StandardPosition.cpp" />
