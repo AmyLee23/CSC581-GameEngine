@@ -84,7 +84,7 @@ double Timeline::getMovementDt() {
         int64_t dt = time - last_movement_time;
         double dt_scaled = static_cast<double>(dt) * time_scale;
         last_movement_time = time;
-        std::cout << "time: " << time << ", movement dt: " << dt_scaled << std::endl;
+        //std::cout << "time: " << time << ", movement dt: " << dt_scaled << std::endl;
         return dt_scaled < 0 ? 0 : dt_scaled;
     }
     return 0;
@@ -97,7 +97,7 @@ double Timeline::getInputDt() {
         int64_t dt = time - last_input_time;
         double dt_scaled = static_cast<double>(dt) * time_scale;
         last_input_time = time;
-        std::cout << "time: " << time << ", input dt: " << dt_scaled << std::endl;
+        //std::cout << "time: " << time << ", input dt: " << dt_scaled << std::endl;
         return dt_scaled < 0 ? 0 : dt_scaled;
     }
     return 0;

@@ -30,11 +30,11 @@ void handleMovement(GameState& gameState) {
 }
 
 int main(int argc, char* args[]) {
-    // Initialize the client (server IP, ports for PUSH-PULL and PUB-SUB, and REQ-REP)
-    JClient client("127.0.0.1", 5555);  // IP, PUB-SUB, REQ-REP ports
+    // Initialize the client (server IP, port REQ-REP)
+    JClient client("127.0.0.1", 5555);
 
     // Ask the server for the player number and add client (e.g., PlayerX)
-    client.connectToServer();  // This will ask for and assign the player number
+    client.connectToServer();
 
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);
@@ -59,7 +59,7 @@ int main(int argc, char* args[]) {
     NamedSprite* fixedShape = new NamedSprite("ground", fixedPos, nullptr, nullptr, fixedDrawer, fixedTimeline);
     gameWorld.addObject(fixedShape);
 
-    // Create the ControllableJumper for the client
+    // Create the ControllableJumper(player object) for the client
     std::string name = client.getPlayerName();
     gameInput.setPlayerName(name);
     int playerNum = std::stoi(name.substr(6));
@@ -69,7 +69,7 @@ int main(int argc, char* args[]) {
     Timeline jumperTimeline(&globalTimeline, 10);
     NamedSprite* jumper = new NamedSprite(name, jumperPos, jumperMovement, jumperMovement, jumperDrawer, jumperTimeline);
     gameWorld.addObject(jumper);
-    std::cout << "Initialized player at (" << 50.0 << ", " << 0.0 + playerNum * 50 << ")" << std::endl;
+    //std::cout << "Initialized player at (" << 50.0 << ", " << 0.0 + playerNum * 50 << ")" << std::endl;
 
     // Initialize SDL for rendering
     if (!windowManager.init(900, 700)) {
@@ -84,16 +84,11 @@ int main(int argc, char* args[]) {
     int targetFPS = 30;  // Frame rate target
     int localFPS = targetFPS;
     int64_t timePerFrame = 1000 / targetFPS;  // Milliseconds per frame
-    // bool accepted = true;
     std::unordered_map<std::string, std::pair<double, double>> movingSprites;
 
     while (!quit) {
         // Start frame timing
         int64_t frameStartTime = globalTimeline.getTime();
-
-        // 1. Update the gameWorld with PUB-SUB data (received from the server)
-        //std::unordered_map<std::string, std::pair<double, double>> movingSprites;
-        //client.receiveGameState(movingSprites);
 
         // If there are new shapes in the server's game state, add them as fixed shapes
         for (const auto& spriteData : movingSprites) {
@@ -119,7 +114,7 @@ int main(int argc, char* args[]) {
             }
         }
 
-        // 2. Poll SDL events (local input)
+        // local input
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
@@ -141,25 +136,20 @@ int main(int argc, char* args[]) {
             }
         }
 
-        NamedSprite* player_before = gameWorld.getObjectByName(client.getPlayerName());
-        std::cout << "Player location before: " << player_before->getPosition()->getX() << ", " << player_before->getPosition()->getY() << std::endl;
-
-        // 3. Create threads for movement and input
+        // Create threads for movement and input
         std::thread inputThread(handleInput, std::ref(gameState), keystate);
         std::thread movementThread(handleMovement, std::ref(gameState));
-
-        // Wait for threads to finish
         inputThread.join();
         movementThread.join();
 
-        // 4. After movement and input, push the client's own (PlayerX's) update to the server
+        // Render the gamestate
+        windowManager.updateWindow(gameState);
+
+        // Send client updates to server
         NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
         movingSprites = client.sendInput(player->getName(), { player->getPosition()->getX(), player->getPosition()->getY()});
 
-        // 5. Render the game state
-        windowManager.updateWindow(gameState);
-
-        // 6. Frame-rate limiting
+        // Frame-rate limiting
         int64_t frameEndTime = globalTimeline.getTime();
         int64_t frameDuration = frameEndTime - frameStartTime;
         int64_t sleepTime = timePerFrame - frameDuration;

@@ -18,17 +18,17 @@ std::mutex mtx;
 // Thread function to handle movement
 void handleMovement(GameState& gameState) {
     std::unique_lock<std::mutex> lock(mtx);
-    gameState.stepMovement();  // Call stepMovement to update the game state
+    gameState.stepMovement();
 }
 
 int main(int argc, char* args[]) {
-    // Initialize the server (ports for PUSH-PULL and PUB-SUB, and REQ-REP for player number)
+    // Initialize the server
     JServer server(5555); 
 
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);
     PhysicsEngine physics;
-    WindowManager windowManager;  // Not used for rendering in server, just in GameState
+    WindowManager windowManager;
     GameWorld gameWorld(800, 600);
     GameState gameState(globalTimeline, gameWorld, physics, windowManager);
 
@@ -49,7 +49,7 @@ int main(int argc, char* args[]) {
 
     // Bouncing shape (platform)
     PositionComponent* platformPos = new StandardPosition(500.0, 200.0, 50, 50);
-    MovementComponent* platformMovement = new BouncingMovement(30.0 / 100.0, 0);  // Speed x, no vertical movement
+    MovementComponent* platformMovement = new BouncingMovement(30.0 / 100.0, 0);
     DrawerComponent* platformDrawer = new SimpleRectDrawer(green);
     Timeline platformTimeline(&globalTimeline, 10);
     NamedSprite* platform = new NamedSprite("platform", platformPos, platformMovement, nullptr, platformDrawer, platformTimeline);
@@ -68,14 +68,15 @@ int main(int argc, char* args[]) {
         int64_t frameStartTime = globalTimeline.getTime();
 
         // quit server with 'q'
+        // TODO: not working, probably because is not an SDL window
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_q)) {
                 quit = true;
             }
         }
 
-        // Handle incoming REQ-REP requests for player numbers
-        server.handlePlayerNumberRequests(gameState);
+        // Handle incoming REQ-REP requests to connect
+        server.handleConnectionRequests(gameState);
 
         // Check for new clients and update last_num_clients
         int current_num_clients = server.getNumClients();
@@ -95,20 +96,6 @@ int main(int argc, char* args[]) {
         // thread to handle movement
         std::thread movementThread(handleMovement, std::ref(gameState));
         movementThread.join();
-
-        /*
-        // Get all moving object positions
-        std::unordered_map<std::string, std::pair<double, double>> movingSprites;
-        for (const auto& object_pair : gameWorld.getObjects()) {
-            NamedSprite* object = object_pair.second;
-            const std::string& name = object_pair.first;
-            if ((name.find("platform") != std::string::npos || name.find("Player") != std::string::npos)) {
-                movingSprites[name] = { object->getPosition()->getX(), object->getPosition()->getY() };
-            }
-        }
-
-        // Broadcast the game state to all clients
-        server.broadcastGameState(movingSprites); */
 
         // Frame-rate limiting
         int64_t frameEndTime = globalTimeline.getTime();
