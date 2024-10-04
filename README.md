@@ -2,36 +2,44 @@
 Group game engine for CSC 581
 
 # How to Run the Submissoin
-Must have a Windows 10/11 environment with Visual Studio 2022 for C++ projects. SDL2's dll and libzmq's dll should be added to the environment PATH variable.
+Must have a Windows 10/11 environment with Visual Studio 2022 for C++ projects. 
 
 Everything is in one Source.zip file.
 
-To build and run the project,
-
+**To configure the project:**
 1. Unzip the folder
 2. Extract all files to a location of your choice
-3. In Visual Studio, choose open a local folder and select the folder you just extracted
-4. The default view of a local folder should be folder view
-5. In Solution Exporer (right or left side), select "Switch between solutions and available views"
-6. There will be a `game-engine.sln` item and a folder item. Double click the `.sln` item.
-1. Double check that VS is configured for Debug x64
-7. Right click `GameEngineLib` and select Build
-1. Right click `MultiThreadedMain` and select 'Select as Startup Project'
-7. Right click `MultiThreadedMain` again and select Build
-8. Then use VS to run in non-debugger mode (hollow green arrow, not solid)
+3. SDL2's dll (`SDL2-2.30.6\lib\x64`) and libzmq's dll (`ZeroMQ\lib`) should be added to the environment PATH variable. Restart VS as necessary.
+4. In Visual Studio, choose open a local folder and select the folder you just extracted
+5. The default view of a local folder should be folder view
+6. In Solution Exporer (right or left side), select "Switch between solutions and available views"
+7. There will be a `game-engine.sln` item and a folder item. Double click the `.sln` item.
+8. Double check that VS is configured for Debug x64
 
-Default Game Controls:
+**For viewing Sections 1 - 5 in a Client-Server:**
+1. Right click `GameEngineLib` and select Build
+2. Right click `Server` and select Build
+3. Right click `Client` and select Build
+4. Right click `Server` and select 'Select as Startup Project'
+5. Run in Non-Debugger Mode, this starts the server
+6. Right click `Client` and select 'Select as Startup Project'
+7. Run in non-debugger mode 3 times to add 3 clients. (Do not spam run, server needs time to establish connection with each client)
 
-move left: left arrow
+**For viewing Section 6, a P2P network with two peers:**
+1. Right click `GameEngineLib` and select Build
+2. Right click `P2PServer` and select Build (Note: this is actually Peer 1 and not a server)
+3. Right click `P2PClient` and select Build (Note: this is actually Peer 2)
+4. Right click `P2PServer` and select 'Select as Startup Project'
+5. Run in Non-Debugger Mode, this starts Peer 1. The SDL window will not render anything until Peer 2 connects.
+6. Right click `P2PClient` and select 'Select as Startup Project'
+7. Run in Non-Debugger Mode, this starts Peer 2. The Peers should be connected.
 
-move right: right arrow
 
-jump: space bar
-
-quit: q
-
-proportional toggle: s
-
-pause/unpause: p
-
-speed up / slow down: + / -
+**Default Game Controls:**  
+move left: left arrow  
+move right: right arrow  
+jump: space bar  
+quit: q  
+proportional toggle: s  
+pause/unpause: p  
+speed up / slow down: + / -  

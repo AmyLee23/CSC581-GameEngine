@@ -27,11 +27,9 @@ void GameState::stepInput(const Uint8* keystate) {
     for (const auto& pair : gameWorld.getObjects()) {
         NamedSprite* sprite = pair.second;
 
-        // Get dt for input processing using last_input_time
-        double dt = sprite->getTimeline().getInputDt();
-
         // Handle input if the sprite has an InputComponent
         if (InputComponent* inputComponent = sprite->getInput()) {
+            double dt = sprite->getTimeline().getInputDt();
             inputComponent->handleInput(keystate, *sprite, *this, dt);
         }
     }
@@ -42,40 +40,13 @@ void GameState::stepMovement() {
     for (const auto& pair : gameWorld.getObjects()) {
         NamedSprite* sprite = pair.second;
 
-        // Get dt for movement processing using last_movement_time
-        double dt = sprite->getTimeline().getMovementDt();
-
         // Handle movement if the sprite has a MovementComponent
         if (MovementComponent* movementComponent = sprite->getMovement()) {
+            double dt = sprite->getTimeline().getMovementDt();
             movementComponent->move(*sprite, *this, dt);
         }
     }
 }
-
-
-
-/*
-void GameState::step(const Uint8* keystate) {
-    // Handle input and movement for each NamedSprite
-    for (const auto& pair : gameWorld.getObjects()) {
-        NamedSprite* sprite = pair.second;
-
-        // Get dt from the sprite's local timeline
-        double dt = sprite->getTimeline().getDt();
-
-        //std::cout << "Delta time (dt): " << dt << std::endl;
-
-        // Handle input
-        if (InputComponent* inputComponent = sprite->getInput()) {
-            inputComponent->handleInput(keystate, *sprite, *this, dt);
-        }
-
-        // Handle movement
-        if (MovementComponent* movementComponent = sprite->getMovement()) {
-            movementComponent->move(*sprite, *this, dt);
-        }
-    }
-} */
 
 Timeline& GameState::getTimeline() {
     return globalTimeline;
