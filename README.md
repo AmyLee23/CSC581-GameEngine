@@ -35,7 +35,7 @@ Everything is in one Source.zip file.
 7. Run in Non-Debugger Mode, this starts Peer 2. The Peers should be connected.
 
 
-**Default Game Controls:**
+**Default Game Controls:**  
 move left: left arrow  
 move right: right arrow  
 jump: space bar  
