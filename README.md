@@ -6,7 +6,7 @@ Must have a Windows 10/11 environment with Visual Studio 2022 for C++ projects.
 
 Everything is in one Source.zip file.
 
-**To configure the project:**
+**To configure:**
 1. Unzip the folder
 2. Extract all files to a location of your choice
 3. SDL2's dll (`SDL2-2.30.6\lib\x64`) and libzmq's dll (`ZeroMQ\lib`) should be added to the environment PATH variable. Restart VS as necessary.
@@ -15,6 +15,10 @@ Everything is in one Source.zip file.
 6. In Solution Exporer (right or left side), select "Switch between solutions and available views"
 7. There will be a `game-engine.sln` item and a folder item. Double click the `.sln` item.
 8. Double check that VS is configured for Debug x64
+
+**For building the Game Engine:**
+1. Right click `GameEngineLib` and select Build
+2. The Game Engine static library is built! (as GameEngineLib.lib in the `x64\Debug` folder)
 
 **For viewing Sections 1 - 5 in a Client-Server:**
 1. Right click `GameEngineLib` and select Build
