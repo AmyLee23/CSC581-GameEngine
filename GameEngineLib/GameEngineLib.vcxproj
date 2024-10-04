@@ -159,6 +159,7 @@
     <ClInclude Include="..\include\JServer.h" />
     <ClInclude Include="..\include\MovementComponent.h" />
     <ClInclude Include="..\include\NamedSprite.h" />
+    <ClInclude Include="..\include\PeerNetwork.h" />
     <ClInclude Include="..\include\PhysicsEngine.h" />
     <ClInclude Include="..\include\PositionComponent.h" />
     <ClInclude Include="..\include\SimpleRectDrawer.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="..\src\JClient.cpp" />
     <ClCompile Include="..\src\JServer.cpp" />
     <ClCompile Include="..\src\NamedSprite.cpp" />
+    <ClCompile Include="..\src\PeerNetwork.cpp" />
     <ClCompile Include="..\src\PhysicsEngine.cpp" />
     <ClCompile Include="..\src\SimpleRectDrawer.cpp" />
     <ClCompile Include="..\src\StandardPosition.cpp" />
