@@ -101,6 +101,10 @@ int main(int argc, char* args[]) {
                 // Determine the drawer color based on the name
                 SDL_Color drawerColor = (name.find("Player") != std::string::npos) ? red : green;
 
+                if (position.first == -1.0) {
+                    continue;
+                }
+
                 // If the object doesn't exist, create it as a fixed shape
                 PositionComponent* fixedPos = new StandardPosition(position.first, position.second, 50, 50);
                 DrawerComponent* fixedDrawer = new SimpleRectDrawer(drawerColor);
@@ -110,6 +114,10 @@ int main(int argc, char* args[]) {
             }
             else {
                 // Update the position of existing moving shapes
+                if (position.first == -1.0) {
+                    std::cout << "removing object " << name;
+                    gameState.getGameWorld().removeObject(name);
+                }
                 sprite->getPosition()->setX(position.first);
                 sprite->getPosition()->setY(position.second);
             }

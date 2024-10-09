@@ -23,8 +23,7 @@ void handleMovement(GameState& gameState) {
 
 int main(int argc, char* args[]) {
     // Initialize the server
-    JServer server(5555);
-
+    JServer server(5555); 
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);
     PhysicsEngine physics;
@@ -46,7 +45,6 @@ int main(int argc, char* args[]) {
     Timeline groundTimeline(&globalTimeline, 64);
     NamedSprite* ground = new NamedSprite("ground", groundPos, nullptr, nullptr, groundDrawer, groundTimeline);
     gameWorld.addObject(ground);
-
     // Bouncing shape (platform)
     PositionComponent* platformPos = new StandardPosition(500.0, 200.0, 50, 50);
     MovementComponent* platformMovement = new BouncingMovement(30.0 / 100.0, 0);

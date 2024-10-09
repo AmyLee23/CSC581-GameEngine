@@ -88,14 +88,14 @@ std::unordered_map<std::string, std::pair<double, double>> JClient::sendInput(co
     memcpy(input_msg.data(), message.c_str(), message.size());
     action_socket->send(input_msg, zmq::send_flags::none);
 
-    std::cout << "Sent player input to the server: " << message << std::endl;
+    //std::cout << "Sent player input to the server: " << message << std::endl;
 
     // Wait for the server's reply
     zmq::message_t reply_msg;
     action_socket->recv(reply_msg, zmq::recv_flags::none);
     std::string reply(static_cast<char*>(reply_msg.data()), reply_msg.size());
 
-    std::cout << "Received game state update from the server: " << reply << std::endl;
+    //std::cout << "Received game state update from the server: " << reply << std::endl;
 
     // Return reply
     std::unordered_map<std::string, std::pair<double, double>> movingSprites = deserializeMovingSprites(reply);
