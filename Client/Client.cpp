@@ -13,6 +13,7 @@
 #include <thread>
 #include <iostream>
 #include <unordered_map>
+#include <set>
 
 // Synchronization primitives
 std::mutex mtx;
@@ -35,6 +36,7 @@ int main(int argc, char* args[]) {
 
     // Ask the server for the player number and add client (e.g., PlayerX)
     client.connectToServer();
+    SDL_Color blue = { 0, 0, 0, 255 };
 
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);
@@ -59,6 +61,41 @@ int main(int argc, char* args[]) {
     NamedSprite* fixedShape = new NamedSprite("ground", fixedPos, nullptr, nullptr, fixedDrawer, fixedTimeline);
     gameWorld.addObject(fixedShape);
 
+    // Fixed shape (block)
+    PositionComponent* blockPos = new StandardPosition(100.0, static_cast<double>(gameWorld.getWorldHeight() - 75), 600, 25);
+    DrawerComponent* blockDrawer = new SimpleRectDrawer({ 150, 75, 0, 255 });
+    Timeline blockTimeline(&globalTimeline, 64);
+    NamedSprite* block = new NamedSprite("block", blockPos, nullptr, nullptr, blockDrawer, blockTimeline);
+    gameWorld.addObject(block);
+
+    // Fixed shape (pillar 1)
+    PositionComponent* groundPos1 = new StandardPosition(100.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 150);
+    DrawerComponent* groundDrawer1 = new SimpleRectDrawer({ 0, 0, 0, 255 });
+    Timeline groundTimeline1(&globalTimeline, 64);
+    NamedSprite* pillar1 = new NamedSprite("pillar1", groundPos1, nullptr, nullptr, groundDrawer1, groundTimeline1);
+    gameWorld.addObject(pillar1);
+
+    // Fixed shape (pillar 2)
+    PositionComponent* groundPos2 = new StandardPosition(200.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 180);
+    DrawerComponent* groundDrawer2 = new SimpleRectDrawer({ 0, 0, 0, 255 });
+    Timeline groundTimeline2(&globalTimeline, 64);
+    NamedSprite* pillar2 = new NamedSprite("pillar2", groundPos2, nullptr, nullptr, groundDrawer2, groundTimeline2);
+    gameWorld.addObject(pillar2);
+
+    // Fixed shape (pillar 3)
+    PositionComponent* groundPos3 = new StandardPosition(600.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 210);
+    DrawerComponent* groundDrawer3 = new SimpleRectDrawer({ 0, 0, 0, 255 });
+    Timeline groundTimeline3(&globalTimeline, 64);
+    NamedSprite* pillar3 = new NamedSprite("pillar3", groundPos3, nullptr, nullptr, groundDrawer3, groundTimeline3);
+    gameWorld.addObject(pillar3);
+
+    // Fixed shape (pillar 4)
+    PositionComponent* groundPos4 = new StandardPosition(700.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 240);
+    DrawerComponent* groundDrawer4 = new SimpleRectDrawer({0, 0, 0, 255});
+    Timeline groundTimeline4(&globalTimeline, 64);
+    NamedSprite* pillar4 = new NamedSprite("pillar4", groundPos4, nullptr, nullptr, groundDrawer4, groundTimeline4);
+    gameWorld.addObject(pillar4);
+
     // Create the ControllableJumper(player object) for the client
     std::string name = client.getPlayerName();
     gameInput.setPlayerName(name);
@@ -72,7 +109,7 @@ int main(int argc, char* args[]) {
     //std::cout << "Initialized player at (" << 50.0 << ", " << 0.0 + playerNum * 50 << ")" << std::endl;
 
     // Initialize SDL for rendering
-    if (!windowManager.init(900, 700)) {
+    if (!windowManager.init(800, 600)) {
         std::cerr << "Failed to initialize!" << std::endl;
         return -1;
     }
@@ -98,7 +135,23 @@ int main(int argc, char* args[]) {
             NamedSprite* sprite = gameWorld.getObjectByName(name);
             if (!sprite) {
                 // Determine the drawer color based on the name
-                SDL_Color drawerColor = (name.find("Player") != std::string::npos) ? red : green;
+                //uncommentSDL_Color drawerColor = (name.find("Player") != std::string::npos) ? red : green;
+                if (position.first == -1.0) {
+                    continue;
+                }
+                SDL_Color drawerColor;
+                if (name.find("Player") != std::string::npos) {
+                    drawerColor = red;
+                }
+                else if (name.find("block") != std::string::npos) {
+                    drawerColor = { 150, 75, 0, 255 };
+                }
+                else if (name.find("pillar") != std::string::npos) {
+                    drawerColor = {0, 0, 0, 255};
+                }
+                else {
+                    drawerColor = green;
+                }
 
                 // If the object doesn't exist, create it as a fixed shape
                 PositionComponent* fixedPos = new StandardPosition(position.first, position.second, 50, 50);
@@ -109,6 +162,10 @@ int main(int argc, char* args[]) {
             }
             else {
                 // Update the position of existing moving shapes
+                if (position.first == -1.0) {
+                    std::cout << "removing object " << name;
+                    gameState.getGameWorld().removeObject(name);
+                }
                 sprite->getPosition()->setX(position.first);
                 sprite->getPosition()->setY(position.second);
             }
@@ -149,6 +206,22 @@ int main(int argc, char* args[]) {
         NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
         movingSprites = client.sendInput(player->getName(), { player->getPosition()->getX(), player->getPosition()->getY()});
 
+        std::set<std::string> localSpriteNames;
+        for (auto& sprite : gameWorld.getObjects()) {
+            localSpriteNames.insert(sprite.first);
+        }
+
+        std::set<std::string> serverSpriteNames;
+        for (auto& sprite : movingSprites) {
+            serverSpriteNames.insert(sprite.first);
+        }
+
+        for (const auto& name : localSpriteNames) {
+            if (serverSpriteNames.find(name) == serverSpriteNames.end() && (name.find("platform") != std::string::npos || name.find("Player") != std::string::npos)) {
+                gameWorld.removeObject(name);
+            }
+        }
+
         // Frame-rate limiting
         int64_t frameEndTime = globalTimeline.getTime();
         int64_t frameDuration = frameEndTime - frameStartTime;
@@ -157,7 +230,8 @@ int main(int argc, char* args[]) {
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         }
     }
-
+    NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
+    client.deleteClient(player->getName(), {-1, -1});
     windowManager.close();
     return 0;
 }

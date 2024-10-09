@@ -66,6 +66,10 @@ std::unordered_map<std::string, std::pair<double, double>> JClient::deserializeM
 
         // Parse the name, x, and y values from each sprite entry
         sprite_stream >> name >> x >> y;
+        if (x == -1.0 && y == -1.0 && !name.empty()) {
+            std::cout << "Here " << name <<": "<<x<<", "<<y;
+            //movingSprites.erase(name);
+        }
         if (!name.empty()) {
             movingSprites[name] = { x, y }; 
         }
@@ -88,18 +92,34 @@ std::unordered_map<std::string, std::pair<double, double>> JClient::sendInput(co
     memcpy(input_msg.data(), message.c_str(), message.size());
     action_socket->send(input_msg, zmq::send_flags::none);
 
-    std::cout << "Sent player input to the server: " << message << std::endl;
+    //std::cout << "Sent player input to the server: " << message << std::endl;
 
     // Wait for the server's reply
     zmq::message_t reply_msg;
     action_socket->recv(reply_msg, zmq::recv_flags::none);
     std::string reply(static_cast<char*>(reply_msg.data()), reply_msg.size());
 
-    std::cout << "Received game state update from the server: " << reply << std::endl;
+    //std::cout << "Received game state update from the server: " << reply << std::endl;
 
     // Return reply
     std::unordered_map<std::string, std::pair<double, double>> movingSprites = deserializeMovingSprites(reply);
     return movingSprites;
+}
+
+// Deleting a client
+void JClient::deleteClient(const std::string& name, const std::pair<double, double>& position) {
+    if (!action_socket) {
+        std::cerr << "Action socket is not initialized!" << std::endl;
+        return;
+    }
+
+    // Serialize the player's input (player name and position)
+    std::string message = name + " " + std::to_string(position.first) + " " + std::to_string(position.second);
+
+    // Send the serialized message to the server
+    zmq::message_t input_msg(message.size());
+    memcpy(input_msg.data(), message.c_str(), message.size());
+    action_socket->send(input_msg, zmq::send_flags::dontwait);
 }
 
 // Getter function to retrieve the player's name

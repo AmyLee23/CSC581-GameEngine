@@ -14,7 +14,8 @@ public:
 
     // Sends player input (REQ-REP) to the server and waits for latest game state
     std::unordered_map<std::string, std::pair<double, double>> sendInput(const std::string& name, const std::pair<double, double>& position);
-
+    void deleteClient(const std::string& name, const std::pair<double, double>& position);
+    //void JClient::updateGameWorld(GameWorld& gameWorld, const std::unordered_map<std::string, std::pair<double, double>>& serverSprites);
     // Retrieve the player's name
     std::string getPlayerName() const;
 

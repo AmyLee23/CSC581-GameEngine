@@ -23,7 +23,10 @@ void handleMovement(GameState& gameState) {
 
 int main(int argc, char* args[]) {
     // Initialize the server
-    JServer server(5555); 
+    JServer server(5555);
+
+    //Colour
+    SDL_Color blue =  { 0, 0, 0, 255 } ;
 
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);
@@ -47,9 +50,44 @@ int main(int argc, char* args[]) {
     NamedSprite* ground = new NamedSprite("ground", groundPos, nullptr, nullptr, groundDrawer, groundTimeline);
     gameWorld.addObject(ground);
 
+    // Fixed shape (block)
+    PositionComponent* blockPos = new StandardPosition(0.0, static_cast<double>(gameWorld.getWorldHeight() - 50), gameWorld.getWorldWidth(), 50);
+    DrawerComponent* blockDrawer = new SimpleRectDrawer({150, 75, 0, 255});
+    Timeline blockTimeline(&globalTimeline, 64);
+    NamedSprite* block = new NamedSprite("block", blockPos, nullptr, nullptr, blockDrawer, blockTimeline);
+    gameWorld.addObject(block);
+
+    // Fixed shape (pillar 1)
+    PositionComponent* groundPos1 = new StandardPosition(100.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 150);
+    DrawerComponent* groundDrawer1 = new SimpleRectDrawer({0, 0, 0, 255});
+    Timeline groundTimeline1(&globalTimeline, 64);
+    NamedSprite* pillar1 = new NamedSprite("pillar1", groundPos1, nullptr, nullptr, groundDrawer1, groundTimeline1);
+    gameWorld.addObject(pillar1);
+
+    // Fixed shape (pillar 2)
+    PositionComponent* groundPos2 = new StandardPosition(200.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 180);
+    DrawerComponent* groundDrawer2 = new SimpleRectDrawer({ 0, 0, 0, 255 });
+    Timeline groundTimeline2(&globalTimeline, 64);
+    NamedSprite* pillar2 = new NamedSprite("pillar2", groundPos2, nullptr, nullptr, groundDrawer2, groundTimeline2);
+    gameWorld.addObject(pillar2);
+
+    // Fixed shape (pillar 3)
+    PositionComponent* groundPos3 = new StandardPosition(600.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 210);
+    DrawerComponent* groundDrawer3 = new SimpleRectDrawer({ 0, 0, 0, 255 });
+    Timeline groundTimeline3(&globalTimeline, 64);
+    NamedSprite* pillar3 = new NamedSprite("pillar3", groundPos3, nullptr, nullptr, groundDrawer3, groundTimeline3);
+    gameWorld.addObject(pillar3);
+
+    // Fixed shape (pillar 4)
+    PositionComponent* groundPos4 = new StandardPosition(700.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 50, 240);
+    DrawerComponent* groundDrawer4 = new SimpleRectDrawer({ 0, 0, 0, 255 });
+    Timeline groundTimeline4(&globalTimeline, 64);
+    NamedSprite* pillar4 = new NamedSprite("pillar4", groundPos4, nullptr, nullptr, groundDrawer4, groundTimeline4);
+    gameWorld.addObject(pillar4);
+
     // Bouncing shape (platform)
-    PositionComponent* platformPos = new StandardPosition(500.0, 200.0, 50, 50);
-    MovementComponent* platformMovement = new BouncingMovement(30.0 / 100.0, 0);
+    PositionComponent* platformPos = new StandardPosition(400.0, 300.0, 50, 100);
+    MovementComponent* platformMovement = new BouncingMovement(0, 30.0 / 100.0);
     DrawerComponent* platformDrawer = new SimpleRectDrawer(green);
     Timeline platformTimeline(&globalTimeline, 10);
     NamedSprite* platform = new NamedSprite("platform", platformPos, platformMovement, nullptr, platformDrawer, platformTimeline);

@@ -22,6 +22,8 @@ public:
     // Handles receiving client input (via the dedicated REP socket per client)
     void handleClientInput(GameState& gameState, zmq::socket_t* client_socket);
 
+    //void notifyClientsOfDisconnect(const std::string& sprite_name);
+
     // Returns the number of connected clients
     int getNumClients() const;
 
