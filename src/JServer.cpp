@@ -99,6 +99,10 @@ void JServer::handleClientInput(GameState& gameState, zmq::socket_t* client_sock
             // Get game state message
             std::string game_state_message = serializeMovingSprites(getMovingSprites(gameState));
 
+            if (position_x == -1.0 && position_y == -1.0) {
+                gameState.getGameWorld().removeObject(sprite_name);
+            }
+
             // Send back updated game state
             zmq::message_t reply_msg(game_state_message.size());
             memcpy(reply_msg.data(), game_state_message.c_str(), game_state_message.size());

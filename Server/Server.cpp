@@ -23,7 +23,7 @@ void handleMovement(GameState& gameState) {
 
 int main(int argc, char* args[]) {
     // Initialize the server
-    JServer server(5555); 
+    JServer server(5555);
 
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);

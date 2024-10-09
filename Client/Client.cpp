@@ -13,6 +13,7 @@
 #include <thread>
 #include <iostream>
 #include <unordered_map>
+#include <set>
 
 // Synchronization primitives
 std::mutex mtx;
@@ -72,7 +73,7 @@ int main(int argc, char* args[]) {
     //std::cout << "Initialized player at (" << 50.0 << ", " << 0.0 + playerNum * 50 << ")" << std::endl;
 
     // Initialize SDL for rendering
-    if (!windowManager.init(900, 700)) {
+    if (!windowManager.init(800, 600)) {
         std::cerr << "Failed to initialize!" << std::endl;
         return -1;
     }
@@ -149,6 +150,22 @@ int main(int argc, char* args[]) {
         NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
         movingSprites = client.sendInput(player->getName(), { player->getPosition()->getX(), player->getPosition()->getY()});
 
+        std::set<std::string> localSpriteNames;
+        for (auto& sprite : gameWorld.getObjects()) {
+            localSpriteNames.insert(sprite.first);
+        }
+
+        std::set<std::string> serverSpriteNames;
+        for (auto& sprite : movingSprites) {
+            serverSpriteNames.insert(sprite.first);
+        }
+
+        for (const auto& name : localSpriteNames) {
+            if (serverSpriteNames.find(name) == serverSpriteNames.end() && (name.find("Player") != std::string::npos)) {
+                gameWorld.removeObject(name);
+            }
+        }
+
         // Frame-rate limiting
         int64_t frameEndTime = globalTimeline.getTime();
         int64_t frameDuration = frameEndTime - frameStartTime;
@@ -157,7 +174,8 @@ int main(int argc, char* args[]) {
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         }
     }
-
+    NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
+    client.deleteClient(player->getName(), {-1, -1});
     windowManager.close();
     return 0;
 }

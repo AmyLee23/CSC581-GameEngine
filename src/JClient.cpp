@@ -102,6 +102,22 @@ std::unordered_map<std::string, std::pair<double, double>> JClient::sendInput(co
     return movingSprites;
 }
 
+// Deleting a client
+void JClient::deleteClient(const std::string& name, const std::pair<double, double>& position) {
+    if (!action_socket) {
+        std::cerr << "Action socket is not initialized!" << std::endl;
+        return;
+    }
+
+    // Serialize the player's input (player name and position)
+    std::string message = name + " " + std::to_string(position.first) + " " + std::to_string(position.second);
+
+    // Send the serialized message to the server
+    zmq::message_t input_msg(message.size());
+    memcpy(input_msg.data(), message.c_str(), message.size());
+    action_socket->send(input_msg, zmq::send_flags::dontwait);
+}
+
 // Getter function to retrieve the player's name
 std::string JClient::getPlayerName() const {
     return player_name;
