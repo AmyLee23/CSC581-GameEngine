@@ -71,7 +71,7 @@ void JServer::handleClientInput(GameState& gameState, zmq::socket_t* client_sock
         // Receive the action request from the client
         if (client_socket->recv(request, zmq::recv_flags::none)) {
             std::string client_input(static_cast<char*>(request.data()), request.size());
-            std::cout << "Received input: " << client_input << std::endl;
+            //std::cout << "Received input: " << client_input << std::endl;
 
             // Deserialize the input (expected format: "name positionx positiony")
             std::istringstream iss(client_input);
@@ -98,6 +98,10 @@ void JServer::handleClientInput(GameState& gameState, zmq::socket_t* client_sock
 
             // Get game state message
             std::string game_state_message = serializeMovingSprites(getMovingSprites(gameState));
+
+            if (position_x == -1.0 && position_y == -1.0) {
+                gameState.getGameWorld().removeObject(sprite_name);
+            }
 
             // Send back updated game state
             zmq::message_t reply_msg(game_state_message.size());

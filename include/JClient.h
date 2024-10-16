@@ -15,6 +15,9 @@ public:
     // Sends player input (REQ-REP) to the server and waits for latest game state
     std::unordered_map<std::string, std::pair<double, double>> sendInput(const std::string& name, const std::pair<double, double>& position);
 
+    //Function that only sends a message with the client coordinates as -1, -1 and has the don't wait flag
+    void deleteClient(const std::string& name, const std::pair<double, double>& position);
+
     // Retrieve the player's name
     std::string getPlayerName() const;
 
