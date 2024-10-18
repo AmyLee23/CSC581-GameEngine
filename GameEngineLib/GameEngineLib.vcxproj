@@ -157,6 +157,7 @@
     <ClInclude Include="..\include\InputComponent.h" />
     <ClInclude Include="..\include\JClient.h" />
     <ClInclude Include="..\include\JServer.h" />
+    <ClInclude Include="..\include\json.hpp" />
     <ClInclude Include="..\include\MovementComponent.h" />
     <ClInclude Include="..\include\NamedSprite.h" />
     <ClInclude Include="..\include\PeerNetwork.h" />

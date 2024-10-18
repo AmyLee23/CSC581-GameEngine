@@ -9,11 +9,20 @@
 #include "ControllableFlyer.h"
 #include "SimpleRectDrawer.h"
 #include "ControllableJumper.h"
+#include "MovementComponent.h"
 #include "GameInput.h"
 
+
 #include <thread>
+#include <fstream>
+#include <json.hpp>
 
 int main(int argc, char* args[]) {
+    // Load sprite data from JSON
+    std::ifstream inputFile("initial_game_state.json");
+    nlohmann::json jsonData;
+    inputFile >> jsonData;
+
     // game initialization
     WindowManager windowManager;
     PhysicsEngine physics;
@@ -23,6 +32,7 @@ int main(int argc, char* args[]) {
 
     // other configs
     gameState.getPhysicsEngine().setPixelsPerMeter(16.0);
+    gameState.getPhysicsEngine().setGravity(5.0 / 100.0);
     GameInput gameInput;
 
     // create window
@@ -31,34 +41,46 @@ int main(int argc, char* args[]) {
         return -1;
     }
 
-    // colors
-    SDL_Color green = { 0, 255, 0, 255 };
-    SDL_Color red = { 255, 0, 0, 255 };
+    // Iterate through the sprite data and create the sprites
+    for (const auto& spriteData : jsonData["sprites"]) {
+        std::string name = spriteData["name"];
+        SDL_Color color = {
+            spriteData["color"]["r"],
+            spriteData["color"]["g"],
+            spriteData["color"]["b"],
+            spriteData["color"]["a"]
+        };
+        PositionComponent* position = new StandardPosition(
+            spriteData["position"]["x"],
+            spriteData["position"]["y"],
+            spriteData["position"]["width"],
+            spriteData["position"]["height"]
+        );
+        DrawerComponent* drawer = new SimpleRectDrawer(color);
+        Timeline localTimeline(&globalTimeline, 10);  // Set a default timeline
 
-    // fixed shape
-    PositionComponent* fp = new StandardPosition(0.0, static_cast<double>(gameWorld.getWorldHeight() - 50), gameWorld.getWorldWidth(), 50);
-    DrawerComponent* fd = new SimpleRectDrawer(green);
-    Timeline localTimeline1(&globalTimeline, 64);
-    NamedSprite* ground = new NamedSprite("ground", fp, nullptr, nullptr, fd, localTimeline1);
-    gameWorld.addObject(ground);
+        // Initialize the sprite's movement component
+        MovementComponent* movement = nullptr;
+        InputComponent* input = nullptr;
 
-    // bouncing shape
-    PositionComponent* bp = new StandardPosition(500.0, 200.0, 80, 60);
-    MovementComponent* bm = new BouncingMovement(30.0 / 100.0, 0);
-    DrawerComponent* bd = new SimpleRectDrawer(green);
-    Timeline localTimeline2(&globalTimeline, 10);
-    NamedSprite* platform = new NamedSprite("platform", bp, bm, nullptr, bd, localTimeline2);
-    gameWorld.addObject(platform);
+        if (name == "jumper") {
+            // Controllable jumper movement
+            ControllableJumper* jumperMovement = new ControllableJumper(45.0 / 100.0, 0.0, 1.5);
+            movement = jumperMovement;
+            input = jumperMovement;  // Assign input component to handle user input
+            gameInput.setPlayerName(name);
+        }
+        else if (name == "platform") {
+            // Create a platform movement component with hard-coded values
+            movement = new BouncingMovement(30.0 / 100.0, 0); // Hardcoded platform movement
+        }
 
-    // controllable jumper
-    gameState.getPhysicsEngine().setGravity(5.0 / 100.0);
-    PositionComponent* jp = new StandardPosition(100.0, 100.0, 50, 50);
-    ControllableJumper* jmi = new ControllableJumper(45.0 / 100.0, 0.0, 1.5);  // handles both movement and input
-    DrawerComponent* jd = new SimpleRectDrawer(red);
-    Timeline localTimeline4(&globalTimeline, 10);
-    NamedSprite* jumper = new NamedSprite("jumper", jp, jmi, jmi, jd, localTimeline4);
-    gameWorld.addObject(jumper);
-    gameInput.setPlayerName("jumper"); // THIS IS A MUST OR SPEEDING/SLOWING WILL NOT WORK
+        // Create the NamedSprite with the appropriate movement component
+        NamedSprite* sprite = new NamedSprite(name, position, movement, input, drawer, localTimeline);
+        gameWorld.addObject(sprite);
+    }
+
+    gameInput.setPlayerName("jumper"); // Ensure this is set
 
     bool quit = false;
     SDL_Event e;
