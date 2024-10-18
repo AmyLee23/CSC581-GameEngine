@@ -1,0 +1,52 @@
+{
+  "sprites": [
+    {
+      "name": "ground",
+      "position": {
+        "x": 0.0,
+        "y": 550.0,
+        "width": 800,
+        "height": 50
+      },
+      "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 255
+      },
+      "movement": "none"
+    },
+    {
+      "name": "platform",
+      "position": {
+        "x": 500.0,
+        "y": 200.0,
+        "width": 80,
+        "height": 60
+      },
+      "color": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 255
+      },
+      "movement": "bouncing"
+    },
+    {
+      "name": "jumper",
+      "position": {
+        "x": 100.0,
+        "y": 100.0,
+        "width": 50,
+        "height": 50
+      },
+      "color": {
+        "r": 255,
+        "g": 0,
+        "b": 0,
+        "a": 255
+      },
+      "movement": "controllable"
+    }
+  ]
+}
