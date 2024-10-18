@@ -12,7 +12,6 @@
 #include "MovementComponent.h"
 #include "GameInput.h"
 
-
 #include <thread>
 #include <fstream>
 #include <json.hpp>
@@ -57,7 +56,6 @@ int main(int argc, char* args[]) {
             spriteData["position"]["height"]
         );
         DrawerComponent* drawer = new SimpleRectDrawer(color);
-        Timeline localTimeline(&globalTimeline, 10);  // Set a default timeline
 
         // Initialize the sprite's movement component
         MovementComponent* movement = nullptr;
@@ -70,13 +68,15 @@ int main(int argc, char* args[]) {
             input = jumperMovement;  // Assign input component to handle user input
             gameInput.setPlayerName(name);
         }
-        else if (name == "platform") {
-            // Create a platform movement component with hard-coded values
-            movement = new BouncingMovement(30.0 / 100.0, 0); // Hardcoded platform movement
+        else if (name.find("platform") != std::string::npos) {
+            // Create a platform movement component with parameters from JSON
+            float bounceSpeed = spriteData["movementParams"]["bounceSpeed"];
+            movement = new BouncingMovement(bounceSpeed / 100.0, 0); // Set movement speed based on JSON
         }
 
         // Create the NamedSprite with the appropriate movement component
-        NamedSprite* sprite = new NamedSprite(name, position, movement, input, drawer, localTimeline);
+        Timeline* localTimeline = new Timeline(&globalTimeline, spriteData["timeline"]);
+        NamedSprite* sprite = new NamedSprite(name, position, movement, input, drawer, *localTimeline);
         gameWorld.addObject(sprite);
     }
 
