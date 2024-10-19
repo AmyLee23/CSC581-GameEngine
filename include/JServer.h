@@ -6,6 +6,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <tuple>
 #include "GameState.h"
 
 class JServer {
@@ -35,6 +36,6 @@ private:
     std::vector<std::thread> client_threads;
     std::mutex client_mutex;
 
-    std::unordered_map<std::string, std::pair<double, double>> getMovingSprites(GameState& gameState);
-    std::string serializeMovingSprites(const std::unordered_map<std::string, std::pair<double, double>>& movingSprites);
+    std::unordered_map<std::string, std::tuple<size_t, double, double>> getMovingSprites(GameState& gameState);
+    std::string serializeMovingSprites(const std::unordered_map<std::string, std::tuple<size_t, double, double>>& movingSprites);
 };

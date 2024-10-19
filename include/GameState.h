@@ -6,6 +6,7 @@ class Timeline;
 class GameWorld;
 class PhysicsEngine;
 class WindowManager;
+class GameTypes;
 
 class GameState {
 private:
@@ -13,9 +14,10 @@ private:
     GameWorld& gameWorld;
     PhysicsEngine& physicsEngine;
     WindowManager& windowManager;
+    GameTypes& gameTypes;
 
 public:
-    GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window);
+    GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types);
     ~GameState();
 
     void step(const Uint8* keystate);
@@ -28,4 +30,5 @@ public:
     GameWorld& getGameWorld();
     PhysicsEngine& getPhysicsEngine();
     WindowManager& getWindowManager();
+    GameTypes& getGameTypes();
 };

@@ -6,10 +6,11 @@
 #include "WindowManager.h"
 #include "MovementComponent.h"
 #include "InputComponent.h"
+#include "GameTypes.h"
 #include <iostream>
 
-GameState::GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window)
-    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window) {}
+GameState::GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types)
+    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window), gameTypes(types) {}
 
 GameState::~GameState() {
     for (auto& pair : gameWorld.getObjects()) {
@@ -62,4 +63,8 @@ PhysicsEngine& GameState::getPhysicsEngine() {
 
 WindowManager& GameState::getWindowManager() {
     return windowManager;
+}
+
+GameTypes& GameState::getGameTypes() {
+    return gameTypes;
 }

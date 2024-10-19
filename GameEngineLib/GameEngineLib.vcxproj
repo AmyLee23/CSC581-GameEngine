@@ -153,6 +153,7 @@
     <ClInclude Include="..\include\DrawerComponent.h" />
     <ClInclude Include="..\include\GameInput.h" />
     <ClInclude Include="..\include\GameState.h" />
+    <ClInclude Include="..\include\GameTypes.h" />
     <ClInclude Include="..\include\GameWorld.h" />
     <ClInclude Include="..\include\InputComponent.h" />
     <ClInclude Include="..\include\JClient.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="..\src\ControllableJumper.cpp" />
     <ClCompile Include="..\src\GameInput.cpp" />
     <ClCompile Include="..\src\GameState.cpp" />
+    <ClCompile Include="..\src\GameTypes.cpp" />
     <ClCompile Include="..\src\GameWorld.cpp" />
     <ClCompile Include="..\src\JClient.cpp" />
     <ClCompile Include="..\src\JServer.cpp" />

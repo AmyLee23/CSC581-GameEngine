@@ -16,7 +16,7 @@ void SimpleRectDrawer::setColor(SDL_Color newColor) {
     color = newColor;
 }
 
-// New draw function that accepts pre-calculated X, Y, width, and height
+// helper draw function that accepts pre-calculated X, Y, width, and height
 void SimpleRectDrawer::draw(double x, double y, int width, int height, SDL_Renderer* renderer) {
     SDL_Rect rect = {
         static_cast<int>(x),
@@ -27,7 +27,7 @@ void SimpleRectDrawer::draw(double x, double y, int width, int height, SDL_Rende
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(renderer, &rect);
 }
-
+// standard draw
 void SimpleRectDrawer::draw(NamedSprite& sprite, GameState& gameState, bool scaling) {
     std::lock_guard<std::mutex> lock(mtx);
     SDL_Renderer* renderer = gameState.getWindowManager().getRenderer();
@@ -41,6 +41,23 @@ void SimpleRectDrawer::draw(NamedSprite& sprite, GameState& gameState, bool scal
     }
     else {
         draw(position->getX(), position->getY(), position->getWidth(), position->getHeight(), renderer); // Draw original
+    }
+}
+
+// draw with offset
+void SimpleRectDrawer::drawWithOffset(NamedSprite& sprite, GameState& gameState, bool scaling, double x_offset, double y_offset) {
+    std::lock_guard<std::mutex> lock(mtx);
+    SDL_Renderer* renderer = gameState.getWindowManager().getRenderer();
+
+    PositionComponent* position = sprite.getPosition();
+
+    if (scaling) {
+        std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // adjust X, Y
+        std::pair<int, int> scaledSize = prepareScaling(position, gameState); // adjust Width, Height
+        draw(relativePosition.first, relativePosition.second, scaledSize.first, scaledSize.second, renderer);
+    }
+    else {
+        draw(position->getX() + x_offset, position->getY() + y_offset, position->getWidth(), position->getHeight(), renderer); // Draw original
     }
 }
 

@@ -7,7 +7,7 @@
 WindowManager::WindowManager() :
     window(nullptr), renderer(nullptr), windowWidth(800), windowHeight(600),
     lastWindowWidth(windowWidth), lastWindowHeight(windowHeight),
-    m_windowExists(false), proportionalMode(false) {}
+    m_windowExists(false), proportionalMode(false), x_offset(0), y_offset(0), bg_color{ 0, 0, 255, 255 } {} // default blue background
 
 // destructor
 WindowManager::~WindowManager() {
@@ -50,7 +50,7 @@ bool WindowManager::init(int screen_width, int screen_height) {
         return false;
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // blue background
+    SDL_SetRenderDrawColor(renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
     SDL_SetWindowSize(window, screen_width, screen_height);
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
@@ -60,7 +60,7 @@ bool WindowManager::init(int screen_width, int screen_height) {
 
 void WindowManager::updateWindow(GameState& gameState) {
     if (renderer) {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // blue background
+        SDL_SetRenderDrawColor(renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
         SDL_RenderClear(renderer);
 
         // draw each sprite in the GameWorld
@@ -69,6 +69,23 @@ void WindowManager::updateWindow(GameState& gameState) {
             DrawerComponent* drawer = sprite->getDrawer();
             if (drawer) {
                 drawer->draw(*sprite, gameState, proportionalMode);
+            }
+        }
+        SDL_RenderPresent(renderer);
+    }
+}
+
+void WindowManager::updateWindowWithScrolling(GameState& gameState) {
+    if (renderer) {
+        SDL_SetRenderDrawColor(renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
+        SDL_RenderClear(renderer);
+
+        // draw each sprite in the GameWorld
+        for (const auto& pair : gameState.getGameWorld().getObjects()) {
+            NamedSprite* sprite = pair.second;
+            DrawerComponent* drawer = sprite->getDrawer();
+            if (drawer) {
+                drawer->drawWithOffset(*sprite, gameState, proportionalMode, x_offset, y_offset);
             }
         }
         SDL_RenderPresent(renderer);
@@ -139,4 +156,28 @@ void WindowManager::setProportionalMode(bool mode) {
 
 void WindowManager::toggleProportionalMode() {
     proportionalMode = !proportionalMode;
+}
+
+void WindowManager::setXOffset(double new_offset) {
+    x_offset = new_offset;
+}
+
+void WindowManager::setYOffset(double new_offset) {
+    y_offset = new_offset;
+}
+
+double WindowManager::getXOffset() {
+    return x_offset;
+}
+
+double WindowManager::getYOffset() {
+    return y_offset;
+}
+
+SDL_Color WindowManager::getBackgroundColor() const {
+    return bg_color;
+}
+
+void WindowManager::setBackgroundColor(const SDL_Color& color) {
+    bg_color = color;
 }

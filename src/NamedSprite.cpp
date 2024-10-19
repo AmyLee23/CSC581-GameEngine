@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "NamedSprite.h"
 
-NamedSprite::NamedSprite(const std::string& name, PositionComponent* position, MovementComponent* movement,
+NamedSprite::NamedSprite(const std::string& name, size_t typeHash, PositionComponent* position, MovementComponent* movement,
     InputComponent* input, DrawerComponent* drawer, Timeline& timeline)
-    : name(name), position(position), movement(movement), input(input), drawer(drawer), localTimeline(timeline) {}
+    : name(name), typeHash(typeHash), position(position), movement(movement), input(input), drawer(drawer), localTimeline(timeline) {}
 
 NamedSprite::~NamedSprite() {
     delete position;
@@ -14,6 +14,10 @@ NamedSprite::~NamedSprite() {
 
 std::string NamedSprite::getName() const {
     return name;
+}
+
+size_t NamedSprite::getTypeHash() const {
+    return typeHash;
 }
 
 Timeline& NamedSprite::getTimeline() {

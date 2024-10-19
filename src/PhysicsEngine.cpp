@@ -3,6 +3,7 @@
 #include "NamedSprite.h"
 #include "GameWorld.h"
 #include "NamedSprite.h"
+#include "GameTypes.h"
 #include <iostream>
 
 PhysicsEngine::PhysicsEngine(double gravity, double pixelsPerMeter, double maxPixelMovement)
@@ -18,13 +19,29 @@ SDL_Rect PhysicsEngine::makeRect(PositionComponent& position) {
     };
     return rect;
 }
-
+// check for any collision
 bool PhysicsEngine::checkCollisions(NamedSprite& sprite, GameState& gameState) {
     PositionComponent* position = sprite.getPosition();
     SDL_Rect rect = makeRect(*position);
     for (auto& pair : gameState.getGameWorld().getObjects()) {
         NamedSprite* otherSprite = pair.second;
         if (sprite.getName() != otherSprite->getName()) {
+            SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
+            if (checkCollision(rect, otherRect)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// check for collision with specific type
+bool PhysicsEngine::checkCollisionsWithType(size_t type, NamedSprite& sprite, GameState& gameState) {
+    PositionComponent* position = sprite.getPosition();
+    SDL_Rect rect = makeRect(*position);
+    for (auto& pair : gameState.getGameWorld().getObjects()) {
+        NamedSprite* otherSprite = pair.second;
+        if (type == otherSprite->getTypeHash() && sprite.getName() != otherSprite->getName()) {
             SDL_Rect otherRect = makeRect(*otherSprite->getPosition());
             if (checkCollision(rect, otherRect)) {
                 return true;

@@ -48,9 +48,9 @@ void JClient::connectToServer() {
     action_socket->connect("tcp://" + server_ip + ":" + std::to_string(action_port));
 }
 
-std::unordered_map<std::string, std::pair<double, double>> JClient::deserializeMovingSprites(std::string game_state_message) {
+std::unordered_map<std::string, std::tuple<size_t, double, double>> JClient::deserializeMovingSprites(std::string game_state_message) {
     // Map of moving sprites
-    std::unordered_map<std::string, std::pair<double, double>> movingSprites;
+    std::unordered_map<std::string, std::tuple<size_t, double, double>> movingSprites;
 
     // Split the game state update by semicolons
     std::istringstream iss(game_state_message);
@@ -62,26 +62,26 @@ std::unordered_map<std::string, std::pair<double, double>> JClient::deserializeM
 
         std::istringstream sprite_stream(sprite_info);
         std::string name;
+        size_t type;
         double x, y;
 
-        // Parse the name, x, and y values from each sprite entry
-        sprite_stream >> name >> x >> y;
+        sprite_stream >> name >> type >> x >> y;
         if (!name.empty()) {
-            movingSprites[name] = { x, y }; 
+            movingSprites[name] = std::make_tuple(type, x, y);
         }
     }
     return movingSprites;
 }
 
 // Function to send player input (REQ-REP) to the server and wait for updated game state
-std::unordered_map<std::string, std::pair<double, double>> JClient::sendInput(const std::string& name, const std::pair<double, double>& position) {
+std::unordered_map<std::string, std::tuple<size_t, double, double>> JClient::sendInput(const std::string& name, size_t type, const std::pair<double, double>& position) {
     if (!action_socket) {
         std::cerr << "Action socket is not initialized!" << std::endl;
-        return std::unordered_map<std::string, std::pair<double, double>>{};
+        return std::unordered_map<std::string, std::tuple<size_t, double, double>>{};
     }
 
     // Serialize the player's input (player name and position)
-    std::string message = name + " " + std::to_string(position.first) + " " + std::to_string(position.second);
+    std::string message = name + " " + std::to_string(type) + " " + std::to_string(position.first) + " " + std::to_string(position.second);
 
     // Send the serialized message to the server
     zmq::message_t input_msg(message.size());
@@ -98,19 +98,19 @@ std::unordered_map<std::string, std::pair<double, double>> JClient::sendInput(co
     //std::cout << "Received game state update from the server: " << reply << std::endl;
 
     // Return reply
-    std::unordered_map<std::string, std::pair<double, double>> movingSprites = deserializeMovingSprites(reply);
+    std::unordered_map<std::string, std::tuple<size_t, double, double>> movingSprites = deserializeMovingSprites(reply);
     return movingSprites;
 }
 
 // Deleting a client
-void JClient::deleteClient(const std::string& name, const std::pair<double, double>& position) {
+ void JClient::deleteClient(size_t type) {
     if (!action_socket) {
         std::cerr << "Action socket is not initialized!" << std::endl;
         return;
     }
 
     // Serialize the player's input (player name and position)
-    std::string message = name + " " + std::to_string(position.first) + " " + std::to_string(position.second);
+    std::string message = player_name + " " + std::to_string(type) + " " + std::to_string(-1) + " " + std::to_string(-1);
 
     // Send the serialized message to the server
     zmq::message_t input_msg(message.size());

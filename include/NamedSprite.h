@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "PositionComponent.h"
 #include "MovementComponent.h"
@@ -12,6 +13,7 @@
 class NamedSprite {
 private:
     std::string name;
+    size_t typeHash;
     PositionComponent* position;
     MovementComponent* movement;
     InputComponent* input;
@@ -19,12 +21,13 @@ private:
     Timeline& localTimeline;
 
 public:
-    NamedSprite(const std::string& name, PositionComponent* position, MovementComponent* movement,
+    NamedSprite(const std::string& name, size_t typeHash, PositionComponent* position, MovementComponent* movement,
         InputComponent* input, DrawerComponent* drawer, Timeline& timeline);
 
     ~NamedSprite();
 
     std::string getName() const;
+    size_t getTypeHash() const;
     Timeline& getTimeline();
     PositionComponent* getPosition() const;
     MovementComponent* getMovement() const;

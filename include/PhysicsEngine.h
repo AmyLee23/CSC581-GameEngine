@@ -13,6 +13,7 @@ public:
 
     // Check collisions
     bool checkCollisions(NamedSprite& sprite, GameState& gameState);
+    bool checkCollisionsWithType(size_t type, NamedSprite& sprite, GameState& gameState);
     //bool checkBottomCollision(NamedSprite& sprite, GameState& gameState);
     //bool checkTopCollision(NamedSprite& sprite, GameState& gameState);
     //bool checkLeftCollision(NamedSprite& sprite, GameState& gameState);

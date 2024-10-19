@@ -17,6 +17,7 @@ public:
     void setColor(SDL_Color newColor);
 
     void draw(NamedSprite& sprite, GameState& gameState, bool scaling) override;
+    virtual void drawWithOffset(NamedSprite& sprite, GameState& gameState, bool scaling, double x_offset, double y_offset) override;
     std::pair<double, double> prepareRelativePosition(PositionComponent* position, GameState& gameState) override;
     std::pair<int, int> prepareScaling(PositionComponent* position, GameState& gameState) override;
 
