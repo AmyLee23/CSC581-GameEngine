@@ -10,6 +10,7 @@
 #include "GameWorld.h"
 #include "GameInput.h"
 #include "GameTypes.h"
+#include "Event.h"
 #include <SDL.h>
 #include <thread>
 #include <iostream>
@@ -47,6 +48,13 @@ int main(int argc, char* args[]) {
     GameTypes types;
     GameState gameState(globalTimeline, gameWorld, physics, windowManager, types);
     GameInput gameInput;
+    /*Event collisionEvent(Event::COLLISION);
+    std::string h = "hi";
+    collisionEvent.addParameter("x", 4);
+    collisionEvent.addParameter("y", float(4.00));*/
+
+
+    
 
     // Configure the physics engine
     gameState.getPhysicsEngine().setPixelsPerMeter(16.0);
