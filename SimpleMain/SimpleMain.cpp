@@ -69,10 +69,11 @@ int main(int argc, char* args[]) {
             gameInput.setPlayerName(name);
         }
         else if (name.find("platform") != std::string::npos) {
-            // Create a platform movement component with parameters from JSON
-            float bounceSpeed = spriteData["movementParams"]["bounceSpeed"];
-            movement = new BouncingMovement(bounceSpeed / 100.0, 0); // Set movement speed based on JSON
-        }
+        // Create a platform movement component with parameters from JSON
+        float bounceSpeedX = spriteData["movementParams"]["bounceSpeed"];
+        float bounceSpeedY = spriteData["movementParams"]["bounceHeight"];
+        movement = new BouncingMovement(bounceSpeedX / 100.0, bounceSpeedY / 100.0); // Set both speeds based on JSON
+    }
 
         // Create the NamedSprite with the appropriate movement component
         Timeline* localTimeline = new Timeline(&globalTimeline, spriteData["timeline"]);
@@ -111,6 +112,28 @@ int main(int argc, char* args[]) {
             }
         }
         gameState.step(keystate);
+        // Define the respawn point
+        const float respawnX = 100.0f; // X coordinate of respawn point
+        const float respawnY = 400.0f; // Y coordinate of respawn point
+
+        // Check if the jumper is off-screen
+        NamedSprite* jumper = gameWorld.getObjectByName("jumper");
+        if (jumper) {
+            PositionComponent* jumperPosition = dynamic_cast<PositionComponent*>(jumper->getPosition());
+            if (jumperPosition) {
+                float jumperX = jumperPosition->getX();
+                float jumperY = jumperPosition->getY();
+
+                // Check if off-screen
+                if (jumperX < 0 || jumperX > windowManager.getWindowWidth() ||
+                    jumperY < 0 || jumperY > windowManager.getWindowHeight()) {
+                    // Respawn at defined point
+                    jumperPosition->setX(respawnX);
+                    jumperPosition->setY(respawnY);
+                }
+            }
+        }
+
         windowManager.updateWindow(gameState);
 
         int64_t frameEndTime = globalTimeline.getTime();
