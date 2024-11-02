@@ -1,12 +1,14 @@
 #pragma once
 
 #include <SDL.h>
+#include "EventManager.h"
 
 class Timeline;
 class GameWorld;
 class PhysicsEngine;
 class WindowManager;
 class GameTypes;
+//class EventManager;
 
 class GameState {
 private:
@@ -15,6 +17,7 @@ private:
     PhysicsEngine& physicsEngine;
     WindowManager& windowManager;
     GameTypes& gameTypes;
+    EventManager eventManager;
 
 public:
     GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types);
@@ -31,4 +34,5 @@ public:
     PhysicsEngine& getPhysicsEngine();
     WindowManager& getWindowManager();
     GameTypes& getGameTypes();
+    EventManager& getEventManager() { return eventManager; }
 };

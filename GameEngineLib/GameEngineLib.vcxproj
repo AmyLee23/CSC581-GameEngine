@@ -159,6 +159,8 @@
     <ClInclude Include="..\include\GameTypes.h" />
     <ClInclude Include="..\include\GameWorld.h" />
     <ClInclude Include="..\include\InputComponent.h" />
+    <ClInclude Include="..\include\InputEvent.h" />
+    <ClInclude Include="..\include\InputEventHandler.h" />
     <ClInclude Include="..\include\JClient.h" />
     <ClInclude Include="..\include\JServer.h" />
     <ClInclude Include="..\include\MovementComponent.h" />

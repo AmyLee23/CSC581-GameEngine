@@ -7,10 +7,12 @@
 #include "MovementComponent.h"
 #include "InputComponent.h"
 #include "GameTypes.h"
+#include "EventManager.h"
+#include "InputEvent.h"
 #include <iostream>
 
 GameState::GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types)
-    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window), gameTypes(types) {}
+    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window), gameTypes(types), eventManager(timeline) {}
 
 GameState::~GameState() {
     for (auto& pair : gameWorld.getObjects()) {
@@ -21,6 +23,7 @@ GameState::~GameState() {
 void GameState::step(const Uint8* keystate) {
     stepInput(keystate);
     stepMovement();
+    eventManager.update();
 }
 
 void GameState::stepInput(const Uint8* keystate) {
@@ -31,9 +34,19 @@ void GameState::stepInput(const Uint8* keystate) {
         // Handle input if the sprite has an InputComponent
         if (InputComponent* inputComponent = sprite->getInput()) {
             double dt = sprite->getTimeline().getInputDt();
-            inputComponent->handleInput(keystate, *sprite, *this, dt);
+            //inputComponent->handleInput(keystate, *sprite, *this, dt);
+            eventManager.raiseEvent(
+                std::make_shared<InputEvent>(
+                    globalTimeline,
+                    *sprite,
+                    keystate,
+                    *this,
+                    dt
+                )
+            );
         }
     }
+    eventManager.update();
 }
 
 void GameState::stepMovement() {
