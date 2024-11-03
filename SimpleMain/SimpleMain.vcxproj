@@ -134,6 +134,9 @@
   <ItemGroup>
     <ClCompile Include="SimpleMain.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="initial_game_state.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

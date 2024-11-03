@@ -4,6 +4,9 @@
 #include "PhysicsEngine.h"
 #include "GameWorld.h"
 #include <iostream>
+#include <chrono>
+#include <thread>
+
 
 ControllableJumper::ControllableJumper(double dx, double dy, double jumpVelocity)
     : dx(dx), dy(dy), isJumping(false), isOnGround(false), jumpVelocity(jumpVelocity) {}
@@ -107,6 +110,29 @@ void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite,
 }
 
 
+void ControllableJumper::applyDashEffect(double dashMultiplier) {
+    std::lock_guard<std::mutex> lock(mtx);
+
+    // Check if 0.3 seconds have passed since the last dash
+    auto now = std::chrono::steady_clock::now();
+    if (isDashing || std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDashTime).count() < 300) {
+        return;  // Exit if already dashing or 0.3 seconds haven't passed since the last dash
+    }
+
+    // Start the dash
+    isDashing = true;
+    lastDashTime = now;
+    double originalDx = dx;
+    dx *= dashMultiplier;
+
+    // Launch a thread to reset dx after 2 seconds
+    std::thread([this, originalDx]() {
+        std::this_thread::sleep_for(std::chrono::seconds(2));  // Dash duration
+        std::lock_guard<std::mutex> lock(this->mtx);
+        this->dx = originalDx;  // Reset dx after dash
+        this->isDashing = false;  // Reset dash flag
+        }).detach();
+}
 
 /*
 void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double dt) {

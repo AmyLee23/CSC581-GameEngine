@@ -14,6 +14,9 @@ GameInput::GameInput()
     quit_key(SDL_SCANCODE_Q),
     speedUp_key(SDL_SCANCODE_EQUALS),
     speedDown_key(SDL_SCANCODE_MINUS),
+    dash_key(SDL_SCANCODE_X),   // Set dash to 'X'
+    left_key(SDL_SCANCODE_LEFT),
+    right_key(SDL_SCANCODE_RIGHT),
     player_name("Player")  // default player name
 {}
 
@@ -110,4 +113,10 @@ std::pair<bool, int> GameInput::handleInputFPS(const Uint8* keystate, GameState&
     int newFps = static_cast<int>(playerTimeline.getTimeScale() * targetFps);
     //std::cout << "timescale: " << playerTimeline.getTimeScale() << " newFps: " << newFps << std::endl;
     return { quit, newFps };
+}
+
+
+bool GameInput::isDashChordActive() const {
+    const Uint8* state = SDL_GetKeyboardState(nullptr);
+    return state[dash_key] && (state[left_key] || state[right_key]);
 }

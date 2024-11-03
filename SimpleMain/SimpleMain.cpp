@@ -9,20 +9,34 @@
 #include "ControllableFlyer.h"
 #include "SimpleRectDrawer.h"
 #include "ControllableJumper.h"
+#include "MovementComponent.h"
 #include "GameInput.h"
+#include "GameTypes.h"
+#include "EventManager.h"
 
 #include <thread>
+#include <fstream>
+#include <json.hpp>
 
 int main(int argc, char* args[]) {
+    // Load sprite data from JSON
+    std::ifstream inputFile("initial_game_state.json");
+    nlohmann::json jsonData;
+    inputFile >> jsonData;
+
     // game initialization
     WindowManager windowManager;
     PhysicsEngine physics;
     Timeline globalTimeline(nullptr, 1);
     GameWorld gameWorld(800, 600);
-    GameState gameState(globalTimeline, gameWorld, physics, windowManager);
+    GameTypes gameTypes;
+    GameState gameState(globalTimeline, gameWorld, physics, windowManager, gameTypes);
+
+    EventManager eventManager(gameState);
 
     // other configs
     gameState.getPhysicsEngine().setPixelsPerMeter(16.0);
+    gameState.getPhysicsEngine().setGravity(5.0 / 100.0);
     GameInput gameInput;
 
     // create window
@@ -31,34 +45,48 @@ int main(int argc, char* args[]) {
         return -1;
     }
 
-    // colors
-    SDL_Color green = { 0, 255, 0, 255 };
-    SDL_Color red = { 255, 0, 0, 255 };
+    // Iterate through the sprite data and create the sprites
+    for (const auto& spriteData : jsonData["sprites"]) {
+        std::string name = spriteData["name"];
+        SDL_Color color = {
+            spriteData["color"]["r"],
+            spriteData["color"]["g"],
+            spriteData["color"]["b"],
+            spriteData["color"]["a"]
+        };
+        PositionComponent* position = new StandardPosition(
+            spriteData["position"]["x"],
+            spriteData["position"]["y"],
+            spriteData["position"]["width"],
+            spriteData["position"]["height"]
+        );
+        DrawerComponent* drawer = new SimpleRectDrawer(color);
 
-    // fixed shape
-    PositionComponent* fp = new StandardPosition(0.0, static_cast<double>(gameWorld.getWorldHeight() - 50), gameWorld.getWorldWidth(), 50);
-    DrawerComponent* fd = new SimpleRectDrawer(green);
-    Timeline localTimeline1(&globalTimeline, 64);
-    NamedSprite* ground = new NamedSprite("ground", fp, nullptr, nullptr, fd, localTimeline1);
-    gameWorld.addObject(ground);
+        // Initialize the sprite's movement component
+        MovementComponent* movement = nullptr;
+        InputComponent* input = nullptr;
 
-    // bouncing shape
-    PositionComponent* bp = new StandardPosition(500.0, 200.0, 80, 60);
-    MovementComponent* bm = new BouncingMovement(30.0 / 100.0, 0);
-    DrawerComponent* bd = new SimpleRectDrawer(green);
-    Timeline localTimeline2(&globalTimeline, 10);
-    NamedSprite* platform = new NamedSprite("platform", bp, bm, nullptr, bd, localTimeline2);
-    gameWorld.addObject(platform);
+        if (name == "jumper") {
+            // Controllable jumper movement
+            ControllableJumper* jumperMovement = new ControllableJumper(45.0 / 100.0, 0.0, 1.5);
+            movement = jumperMovement;
+            input = jumperMovement;  // Assign input component to handle user input
+            gameInput.setPlayerName(name);
+        }
+        else if (name.find("platform") != std::string::npos) {
+            // Create a platform movement component with parameters from JSON
+            float bounceSpeedX = spriteData["movementParams"]["bounceSpeed"];
+            float bounceSpeedY = spriteData["movementParams"]["bounceHeight"];
+            movement = new BouncingMovement(bounceSpeedX / 100.0, bounceSpeedY / 100.0); // Set both speeds based on JSON
+        }
 
-    // controllable jumper
-    gameState.getPhysicsEngine().setGravity(5.0 / 100.0);
-    PositionComponent* jp = new StandardPosition(100.0, 100.0, 50, 50);
-    ControllableJumper* jmi = new ControllableJumper(45.0 / 100.0, 0.0, 1.5);  // handles both movement and input
-    DrawerComponent* jd = new SimpleRectDrawer(red);
-    Timeline localTimeline4(&globalTimeline, 10);
-    NamedSprite* jumper = new NamedSprite("jumper", jp, jmi, jmi, jd, localTimeline4);
-    gameWorld.addObject(jumper);
-    gameInput.setPlayerName("jumper"); // THIS IS A MUST OR SPEEDING/SLOWING WILL NOT WORK
+        // Create the NamedSprite with the appropriate movement component
+        Timeline* localTimeline = new Timeline(&globalTimeline, spriteData["timeline"]);
+        NamedSprite* sprite = new NamedSprite(name, 0, position, movement, input, drawer, *localTimeline);
+        gameWorld.addObject(sprite);
+    }
+
+    gameInput.setPlayerName("jumper"); // Ensure this is set
 
     bool quit = false;
     SDL_Event e;
@@ -89,6 +117,39 @@ int main(int argc, char* args[]) {
             }
         }
         gameState.step(keystate);
+        // Define the respawn point
+        const float respawnX = 100.0f; // X coordinate of respawn point
+        const float respawnY = 400.0f; // Y coordinate of respawn point
+
+        // **New Code**: Check for dash input chord and trigger dash event if active
+        if (gameInput.isDashChordActive()) {
+            auto dashEvent = std::make_shared<Event>(globalTimeline, "Dash", 1); // Priority 1 for dash
+            eventManager.raiseEvent(dashEvent);
+        }
+
+        // Process events, including the dash event
+        eventManager.handleEvents();
+
+        gameState.step(keystate);
+
+        // Check if the jumper is off-screen
+        NamedSprite* jumper = gameWorld.getObjectByName("jumper");
+        if (jumper) {
+            PositionComponent* jumperPosition = dynamic_cast<PositionComponent*>(jumper->getPosition());
+            if (jumperPosition) {
+                float jumperX = jumperPosition->getX();
+                float jumperY = jumperPosition->getY();
+
+                // Check if off-screen
+                if (jumperX < 0 || jumperX > windowManager.getWindowWidth() ||
+                    jumperY < 0 || jumperY > windowManager.getWindowHeight()) {
+                    // Respawn at defined point
+                    jumperPosition->setX(respawnX);
+                    jumperPosition->setY(respawnY);
+                }
+            }
+        }
+
         windowManager.updateWindow(gameState);
 
         int64_t frameEndTime = globalTimeline.getTime();

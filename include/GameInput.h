@@ -11,6 +11,10 @@ private:
     SDL_Scancode quit_key;
     SDL_Scancode speedUp_key;
     SDL_Scancode speedDown_key;
+    // New keys for dash input chord
+    SDL_Scancode dash_key;
+    SDL_Scancode left_key;
+    SDL_Scancode right_key;
     std::string player_name; // player to speed up or slow down
 
     double adjustTimeScale(double currentScale, double adjustment, double minScale, double maxScale);
@@ -20,6 +24,8 @@ private:
 
 public:
     GameInput();
+
+    bool isDashChordActive() const;
 
     SDL_Scancode getPauseKey() const;
     SDL_Scancode getScalingKey() const;

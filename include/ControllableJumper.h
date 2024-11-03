@@ -3,6 +3,7 @@
 #include "MovementComponent.h"
 #include "InputComponent.h"
 #include <mutex>
+#include <chrono>
 
 class ControllableJumper : public MovementComponent, public InputComponent {
 private:
@@ -12,6 +13,8 @@ private:
     bool isOnGround;     // Indicates if the sprite is on the ground
     double jumpVelocity;  // The velocity when jumping
     std::mutex mtx;
+    std::chrono::steady_clock::time_point lastDashTime;
+    bool isDashing = false;  // Flag to indicate if currently dashing
 
 public:
     ControllableJumper(double dx, double dy, double jumpVelocity);
@@ -30,4 +33,6 @@ public:
 
     void move(NamedSprite& sprite, GameState& gameState, double dt) override;
     void handleInput(const Uint8* keystate, NamedSprite& sprite, GameState& gameState, double dt) override;
+    void applyDashEffect(double dashMultiplier);
+
 };
