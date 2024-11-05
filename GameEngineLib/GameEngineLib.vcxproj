@@ -151,11 +151,16 @@
     <ClInclude Include="..\include\ControllableFlyer.h" />
     <ClInclude Include="..\include\ControllableJumper.h" />
     <ClInclude Include="..\include\DrawerComponent.h" />
+    <ClInclude Include="..\include\Event.h" />
+    <ClInclude Include="..\include\EventHandler.h" />
+    <ClInclude Include="..\include\EventManager.h" />
     <ClInclude Include="..\include\GameInput.h" />
     <ClInclude Include="..\include\GameState.h" />
     <ClInclude Include="..\include\GameTypes.h" />
     <ClInclude Include="..\include\GameWorld.h" />
     <ClInclude Include="..\include\InputComponent.h" />
+    <ClInclude Include="..\include\InputEvent.h" />
+    <ClInclude Include="..\include\InputEventHandler.h" />
     <ClInclude Include="..\include\JClient.h" />
     <ClInclude Include="..\include\JServer.h" />
     <ClInclude Include="..\include\MovementComponent.h" />
@@ -174,6 +179,8 @@
     <ClCompile Include="..\src\BouncingMovement.cpp" />
     <ClCompile Include="..\src\ControllableFlyer.cpp" />
     <ClCompile Include="..\src\ControllableJumper.cpp" />
+    <ClCompile Include="..\src\Event.cpp" />
+    <ClCompile Include="..\src\EventManager.cpp" />
     <ClCompile Include="..\src\GameInput.cpp" />
     <ClCompile Include="..\src\GameState.cpp" />
     <ClCompile Include="..\src\GameTypes.cpp" />
