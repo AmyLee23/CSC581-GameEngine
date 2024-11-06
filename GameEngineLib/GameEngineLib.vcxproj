@@ -148,6 +148,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\BouncingMovement.h" />
+    <ClInclude Include="..\include\CollisionEvent.h" />
+    <ClInclude Include="..\include\CollisionEventHandler.h" />
     <ClInclude Include="..\include\ControllableFlyer.h" />
     <ClInclude Include="..\include\ControllableJumper.h" />
     <ClInclude Include="..\include\DrawerComponent.h" />
@@ -177,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BouncingMovement.cpp" />
+    <ClCompile Include="..\src\CollisionEvent.cpp" />
     <ClCompile Include="..\src\ControllableFlyer.cpp" />
     <ClCompile Include="..\src\ControllableJumper.cpp" />
     <ClCompile Include="..\src\Event.cpp" />
@@ -185,6 +188,7 @@
     <ClCompile Include="..\src\GameState.cpp" />
     <ClCompile Include="..\src\GameTypes.cpp" />
     <ClCompile Include="..\src\GameWorld.cpp" />
+    <ClCompile Include="..\src\InputEvent.cpp" />
     <ClCompile Include="..\src\JClient.cpp" />
     <ClCompile Include="..\src\JServer.cpp" />
     <ClCompile Include="..\src\NamedSprite.cpp" />
