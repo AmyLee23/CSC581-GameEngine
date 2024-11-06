@@ -11,6 +11,7 @@ private:
     bool isJumping;      // Indicates if the sprite is currently jumping
     bool isOnGround;     // Indicates if the sprite is on the ground
     double jumpVelocity;  // The velocity when jumping
+    double speed;
     std::mutex mtx;
 
 public:

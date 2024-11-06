@@ -12,6 +12,7 @@
 #include "GameTypes.h"
 #include "EventManager.h"
 #include "InputEventHandler.h"
+#include "CollisionEventHandler.h"
 #include <SDL.h>
 #include <thread>
 #include <iostream>
@@ -51,8 +52,8 @@ int main(int argc, char* args[]) {
     GameInput gameInput;
 
     auto& eventManager = gameState.getEventManager(); // Get reference to event manager
-    eventManager.registerHandler("Input",
-        std::make_shared<InputEventHandler>(gameState));
+    eventManager.registerHandler("Input", std::make_shared<InputEventHandler>(gameState));
+    eventManager.registerHandler("Collision", std::make_shared<CollisionEventHandler>());
     
 
     // Configure the physics engine
@@ -80,7 +81,7 @@ int main(int argc, char* args[]) {
     gameInput.setPlayerName(name);
     int playerNum = std::stoi(name.substr(6));
     PositionComponent* jumperPos = new StandardPosition(50.0, 0.0 + playerNum * 50, 50, 50);
-    ControllableJumper* jumperMovement = new ControllableJumper(45.0 / 100.0, 0.0, 1.5);  // Handles movement and input
+    ControllableJumper* jumperMovement = new ControllableJumper(45.0 / 100.0, 0.0, 2.5);  // Handles movement and input
     DrawerComponent* jumperDrawer = new SimpleRectDrawer(red);
     Timeline jumperTimeline(&globalTimeline, 10);
     NamedSprite* jumper = new NamedSprite(name, player_type, jumperPos, jumperMovement, jumperMovement, jumperDrawer, jumperTimeline);

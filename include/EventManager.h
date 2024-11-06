@@ -33,7 +33,5 @@ private:
     };
 
     // Priority queue for events
-    std::priority_queue<std::shared_ptr<Event>,
-        std::vector<std::shared_ptr<Event>>,
-        EventComparator> eventQueue;
+    std::priority_queue<std::shared_ptr<Event>, std::vector<std::shared_ptr<Event>>, EventComparator> eventQueue;
 };
