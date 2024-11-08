@@ -14,6 +14,12 @@ private:
     double speed;
     std::mutex mtx;
 
+    // Dash properties
+    bool isDashing = false;
+    double dashSpeedMultiplier = 3.0; // Adjust multiplier as needed
+    const double dashDuration = 0.2; // Dash duration in seconds
+    std::chrono::steady_clock::time_point dashStartTime;
+
 public:
     ControllableJumper(double dx, double dy, double jumpVelocity);
 
@@ -28,6 +34,9 @@ public:
     void setJumpVelocity(double jumpVelocity);
     void setIsJumping(bool isJumping);
     void setIsOnGround(bool isOnGround);
+
+    // Add a method to initiate a dash
+    void startDash(int direction);
 
     void move(NamedSprite& sprite, GameState& gameState, double dt) override;
     void handleInput(const Uint8* keystate, NamedSprite& sprite, GameState& gameState, double dt) override;

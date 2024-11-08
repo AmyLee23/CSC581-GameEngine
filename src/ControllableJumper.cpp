@@ -133,6 +133,14 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
     }
 }
 
+void ControllableJumper::startDash(int direction) {
+    isDashing = true;
+    dashStartTime = std::chrono::steady_clock::now();
+
+    // Set dx to a higher speed in the given direction
+    dx = direction * speed * dashSpeedMultiplier;
+}
+
 void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite, GameState& gameState, double dt) {
     std::lock_guard<std::mutex> lock(mtx);
     PositionComponent& position = *sprite.getPosition();
@@ -156,20 +164,32 @@ void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite,
     double incrementX = moveX / totalSteps;
     double incrementY = moveY / totalSteps;
 
-    // handle jumping
-    if (keystate[SDL_SCANCODE_SPACE] && isOnGround) {
-        std::cout << "Jump detected." << std::endl;
-        dy = jumpVelocity;  // start jumping by setting the vertical velocity
-        isJumping = true;
-        isOnGround = false;
+    // Check if the dash duration has ended
+    if (isDashing) {
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration<double>(now - dashStartTime).count() > dashDuration) {
+            isDashing = false;
+            dx = 0; // Reset dx after dash
+        }
     }
 
-    if (keystate[SDL_SCANCODE_LEFT]) {
-        dx = -speed;
-    }else if (keystate[SDL_SCANCODE_RIGHT]) {
-        dx = speed;
-    }
-    else {
-        dx = 0;
+    // Handle regular movement input if not dashing
+    if (!isDashing) {
+        if (keystate[SDL_SCANCODE_LEFT]) {
+            dx = -speed;
+        }
+        else if (keystate[SDL_SCANCODE_RIGHT]) {
+            dx = speed;
+        }
+        else {
+            dx = 0;
+        }
+
+        // Handle jumping
+        if (keystate[SDL_SCANCODE_SPACE] && isOnGround) {
+            dy = jumpVelocity;  // Start jumping by setting the vertical velocity
+            isJumping = true;
+            isOnGround = false;
+        }
     }
 }
