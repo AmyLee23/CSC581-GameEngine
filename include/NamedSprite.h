@@ -19,10 +19,12 @@ private:
     InputComponent* input;
     DrawerComponent* drawer;
     Timeline& localTimeline;
+    double spawnX;
+    double spawnY;
 
 public:
     NamedSprite(const std::string& name, size_t typeHash, PositionComponent* position, MovementComponent* movement,
-        InputComponent* input, DrawerComponent* drawer, Timeline& timeline);
+        InputComponent* input, DrawerComponent* drawer, Timeline& timeline, double spawnX, double spawnY);
 
     ~NamedSprite();
 
@@ -33,27 +35,6 @@ public:
     MovementComponent* getMovement() const;
     InputComponent* getInput() const;
     DrawerComponent* getDrawer() const;
+    double getSpawnX() const;
+    double getSpawnY() const;
 };
-
-//class NamedSprite {
-//private:
-//    std::string name;
-//    std::unique_ptr<PositionComponent> position;
-//    std::unique_ptr<MovementComponent> movement;
-//    std::unique_ptr<InputComponent> input;
-//    std::unique_ptr<DrawerComponent> drawer;
-//    Timeline& localTimeline;  
-//
-//public:
-//    NamedSprite(const std::string& name, std::unique_ptr<PositionComponent> position, std::unique_ptr<MovementComponent> movement, 
-//        std::unique_ptr<InputComponent> input, std::unique_ptr<DrawerComponent> drawer, Timeline& timeline);
-//
-//    ~NamedSprite() = default;
-//
-//    std::string getName() const;
-//    Timeline& getTimeline();
-//    PositionComponent* getPosition() const;
-//    MovementComponent* getMovement() const;
-//    InputComponent* getInput() const;
-//    DrawerComponent* getDrawer() const;
-//};

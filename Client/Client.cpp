@@ -13,6 +13,8 @@
 #include "EventManager.h"
 #include "InputEventHandler.h"
 #include "CollisionEventHandler.h"
+#include "DeathEventHandler.h"
+#include "SpawnEventHandler.h"
 #include <SDL.h>
 #include <thread>
 #include <iostream>
@@ -27,12 +29,16 @@ std::mutex mtx;
 void handleInput(GameState& gameState, const Uint8* keystate) {
     std::unique_lock<std::mutex> lock(mtx);
     gameState.stepInput(keystate);
+    gameState.processPendingEvents();
+    gameState.getEventManager().update();
 }
 
 // Thread function to handle movement
 void handleMovement(GameState& gameState) {
     std::unique_lock<std::mutex> lock(mtx);
     gameState.stepMovement();
+    gameState.processPendingEvents();
+    gameState.getEventManager().update();
 }
 
 int main(int argc, char* args[]) {
@@ -54,6 +60,8 @@ int main(int argc, char* args[]) {
     auto& eventManager = gameState.getEventManager(); // Get reference to event manager
     eventManager.registerHandler("Input", std::make_shared<InputEventHandler>(gameState));
     eventManager.registerHandler("Collision", std::make_shared<CollisionEventHandler>());
+    eventManager.registerHandler("Death", std::make_shared<DeathEventHandler>(gameState));
+    eventManager.registerHandler("Spawn", std::make_shared<SpawnEventHandler>());
     
 
     // Configure the physics engine
@@ -63,18 +71,28 @@ int main(int argc, char* args[]) {
     // colors
     SDL_Color green = { 0, 255, 0, 255 };
     SDL_Color red = { 255, 0, 0, 255 };
+    double spawnX = 20.0;
+    double spawnY = static_cast<double>(gameWorld.getWorldHeight() - 100);
 
     // define game types (expected types are "player" and "platform", can customize further if needed)
     size_t player_type = types.getTypeHash("player");
     size_t platform_type = types.getTypeHash("platform");
     size_t fixed_type = types.getTypeHash("fixed");
+    size_t obstacle_type = types.getTypeHash("obstacle");
 
     // Create the fixed shape (must match server's)
     PositionComponent* fixedPos = new StandardPosition(0.0, static_cast<double>(gameWorld.getWorldHeight() - 50), gameWorld.getWorldWidth(), 50);
     DrawerComponent* fixedDrawer = new SimpleRectDrawer(green);
     Timeline fixedTimeline(&globalTimeline, 64);
-    NamedSprite* fixedShape = new NamedSprite("ground", fixed_type, fixedPos, nullptr, nullptr, fixedDrawer, fixedTimeline);
+    NamedSprite* fixedShape = new NamedSprite("ground", fixed_type, fixedPos, nullptr, nullptr, fixedDrawer, fixedTimeline, spawnX, spawnY);
     gameWorld.addObject(fixedShape);
+
+    // Create the fixed obstacle shape (must match server's)
+    PositionComponent* fixedPos1 = new StandardPosition(400.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 75, 100);
+    DrawerComponent* fixedDrawer1 = new SimpleRectDrawer({0, 0, 0, 255});
+    Timeline fixedTimeline1(&globalTimeline, 64);
+    NamedSprite* fixedShape1 = new NamedSprite("obstacle", obstacle_type, fixedPos1, nullptr, nullptr, fixedDrawer1, fixedTimeline1, spawnX, spawnY);
+    gameWorld.addObject(fixedShape1);
 
     // Create the ControllableJumper(player object) for the client
     std::string name = client.getPlayerName();
@@ -84,9 +102,8 @@ int main(int argc, char* args[]) {
     ControllableJumper* jumperMovement = new ControllableJumper(45.0 / 100.0, 0.0, 2.5);  // Handles movement and input
     DrawerComponent* jumperDrawer = new SimpleRectDrawer(red);
     Timeline jumperTimeline(&globalTimeline, 10);
-    NamedSprite* jumper = new NamedSprite(name, player_type, jumperPos, jumperMovement, jumperMovement, jumperDrawer, jumperTimeline);
+    NamedSprite* jumper = new NamedSprite(name, player_type, jumperPos, jumperMovement, jumperMovement, jumperDrawer, jumperTimeline, spawnX, spawnY);
     gameWorld.addObject(jumper);
-    //std::cout << "Initialized player at (" << 50.0 << ", " << 0.0 + playerNum * 50 << ")" << std::endl;
 
     // Initialize SDL for rendering
     if (!windowManager.init(800, 600)) {
@@ -128,7 +145,7 @@ int main(int argc, char* args[]) {
                 // If the object doesn't exist, create it as a fixed shape
                 PositionComponent* fixedPos = new StandardPosition(x, y, 50, 50);
                 DrawerComponent* fixedDrawer = new SimpleRectDrawer(drawerColor);
-                NamedSprite* newSprite = new NamedSprite(name, player_type, fixedPos, nullptr, nullptr, fixedDrawer, globalTimeline);
+                NamedSprite* newSprite = new NamedSprite(name, player_type, fixedPos, nullptr, nullptr, fixedDrawer, globalTimeline, spawnX, spawnY);
                 gameWorld.addObject(newSprite);
                 std::cout << "Added " << name << " as a fixed shape to the game world." << std::endl;
             }

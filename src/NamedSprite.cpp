@@ -2,8 +2,9 @@
 #include "NamedSprite.h"
 
 NamedSprite::NamedSprite(const std::string& name, size_t typeHash, PositionComponent* position, MovementComponent* movement,
-    InputComponent* input, DrawerComponent* drawer, Timeline& timeline)
-    : name(name), typeHash(typeHash), position(position), movement(movement), input(input), drawer(drawer), localTimeline(timeline) {}
+    InputComponent* input, DrawerComponent* drawer, Timeline& timeline, double spawnX, double spawnY)
+    : name(name), typeHash(typeHash), position(position), movement(movement), input(input), drawer(drawer), 
+    localTimeline(timeline), spawnX(spawnX), spawnY(spawnY) {}
 
 NamedSprite::~NamedSprite() {
     delete position;
@@ -38,4 +39,12 @@ InputComponent* NamedSprite::getInput() const {
 
 DrawerComponent* NamedSprite::getDrawer() const {
     return drawer;
+}
+
+double NamedSprite::getSpawnX() const {
+    return spawnX;
+}
+
+double NamedSprite::getSpawnY() const {
+    return spawnY;
 }

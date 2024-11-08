@@ -8,7 +8,6 @@ class GameWorld;
 class PhysicsEngine;
 class WindowManager;
 class GameTypes;
-//class EventManager;
 
 class GameState {
 private:
@@ -18,6 +17,7 @@ private:
     WindowManager& windowManager;
     GameTypes& gameTypes;
     EventManager eventManager;
+    std::queue<std::shared_ptr<Event>> pendingEvents;
 
 public:
     GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types);
@@ -35,4 +35,7 @@ public:
     WindowManager& getWindowManager();
     GameTypes& getGameTypes();
     EventManager& getEventManager() { return eventManager; }
+
+    void queueEvent(std::shared_ptr<Event> event);
+    void processPendingEvents();
 };

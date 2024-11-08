@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EventManager.h"
+#include <iostream>
 
 void EventManager::registerHandler(const std::string& eventType,
     std::shared_ptr<EventHandler> handler) {
