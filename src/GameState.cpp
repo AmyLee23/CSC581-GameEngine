@@ -34,8 +34,7 @@ void GameState::stepInput(const Uint8* keystate) {
         // Handle input if the sprite has an InputComponent
         if (InputComponent* inputComponent = sprite->getInput()) {
             double dt = sprite->getTimeline().getInputDt();
-            //inputComponent->handleInput(keystate, *sprite, *this, dt);
-            eventManager.raiseEvent(
+            queueEvent(
                 std::make_shared<InputEvent>(
                     globalTimeline,
                     *sprite,
@@ -46,7 +45,6 @@ void GameState::stepInput(const Uint8* keystate) {
             );
         }
     }
-    eventManager.update();
 }
 
 void GameState::stepMovement() {
@@ -80,4 +78,16 @@ WindowManager& GameState::getWindowManager() {
 
 GameTypes& GameState::getGameTypes() {
     return gameTypes;
+}
+
+void GameState::queueEvent(std::shared_ptr<Event> event) {
+    pendingEvents.push(event);
+}
+
+void GameState::processPendingEvents() {
+    while (!pendingEvents.empty()) {
+        auto event = pendingEvents.front();
+        pendingEvents.pop();
+        eventManager.raiseEvent(event);
+    }
 }

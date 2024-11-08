@@ -4,6 +4,8 @@
 #include "PhysicsEngine.h"
 #include "GameWorld.h"
 #include "CollisionEvent.h"
+#include "DeathEvent.h"
+#include "GameTypes.h"
 #include <iostream>
 
 ControllableJumper::ControllableJumper(double dx, double dy, double jumpVelocity)
@@ -26,7 +28,9 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
     PositionComponent& position = *sprite.getPosition();
     PhysicsEngine& physics = gameState.getPhysicsEngine();
     GameWorld& gameWorld = gameState.getGameWorld();
+    GameTypes& types = gameState.getGameTypes();
 
+    //====== Handling Vertical Movement ======
     double lastY = position.getY();
 
     // apply gravity (modify dy only)
@@ -42,11 +46,21 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
     for (int step = 0; step < stepsY; ++step) {
         position.setY(lastY - incrementY);
 
+        if (physics.checkCollisionsWithType(types.getTypeHash("obstacle"), sprite, gameState)) {
+            gameState.queueEvent(
+                std::make_shared<DeathEvent>(
+                    sprite.getTimeline(),
+                    sprite
+                )
+            );
+            return;
+        }
+
         // Check for collisions
         if (physics.checkCollisions(sprite, gameState)) {
             if (physics.checkCollisions(sprite, gameState)) {
                 dy = 0;
-                gameState.getEventManager().raiseEvent(
+                gameState.queueEvent(
                     std::make_shared<CollisionEvent>(
                         sprite.getTimeline(),
                         sprite,
@@ -71,7 +85,7 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
         }
     }
 
-    ////====== Handling Horizontal Movement ======
+    //====== Handling Horizontal Movement ======
     if (dx != 0) {
         double lastX = position.getX();
         double moveX = dx * dt * physics.getPixelsPerMeter();
@@ -83,12 +97,21 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
         for (int step = 0; step < stepsX; ++step) {
             position.setX(lastX + incrementX);
 
+            if (physics.checkCollisionsWithType(types.getTypeHash("obstacle"), sprite, gameState)) {
+                gameState.queueEvent(
+                    std::make_shared<DeathEvent>(
+                        sprite.getTimeline(),
+                        sprite
+                    )
+                );
+                return;
+            }
+
             // Check for collisions after each incremental movement
             if (position.getX() < 0 ||
                 position.getX() + position.getWidth() > gameWorld.getWorldWidth() ||
                 physics.checkCollisions(sprite, gameState)) {
-
-                gameState.getEventManager().raiseEvent(
+                gameState.queueEvent(
                     std::make_shared<CollisionEvent>(
                         sprite.getTimeline(),
                         sprite,
@@ -135,6 +158,7 @@ void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite,
 
     // handle jumping
     if (keystate[SDL_SCANCODE_SPACE] && isOnGround) {
+        std::cout << "Jump detected." << std::endl;
         dy = jumpVelocity;  // start jumping by setting the vertical velocity
         isJumping = true;
         isOnGround = false;
@@ -142,44 +166,10 @@ void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite,
 
     if (keystate[SDL_SCANCODE_LEFT]) {
         dx = -speed;
-        //position.setX(lastX - incrementX);
     }else if (keystate[SDL_SCANCODE_RIGHT]) {
         dx = speed;
-        //position.setX(lastX + incrementX);
     }
     else {
         dx = 0;
     }
-    
-
-    // Incrementally handle movement
-    //for (int step = 0; step < totalSteps; ++step) {
-    //    // increment horizontal movement
-    //    if (keystate[SDL_SCANCODE_LEFT]) {
-    //        position.setX(lastX - incrementX);
-    //    }
-    //    if (keystate[SDL_SCANCODE_RIGHT]) {
-    //        position.setX(lastX + incrementX);
-    //    }
-    //    // check horizontal collisions
-    //    if (position.getX() < 0 || position.getX() + position.getWidth() > gameWorld.getWorldWidth() || physics.checkCollisions(sprite, gameState)) {
-    //        //position.setX(lastX);  // reset to last valid position
-    //        //break;  // stop horizontal movement on collision
-    //        gameState.getEventManager().raiseEvent(
-    //            std::make_shared<CollisionEvent>(
-    //                sprite.getTimeline(),
-    //                sprite,
-    //                lastX,           // lastValidX
-    //                position.getY(), // current Y
-    //                false,          // not moving down
-    //                isOnGround,     // reference to isOnGround
-    //                true           // is horizontal collision
-    //            )
-    //        );
-    //        break;
-    //    }
-    //    else {
-    //        lastX = position.getX();  // Update lastX to the new valid position
-    //    }
-    //}
 }
