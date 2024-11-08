@@ -158,7 +158,6 @@ void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite,
 
     // handle jumping
     if (keystate[SDL_SCANCODE_SPACE] && isOnGround) {
-        std::cout << "Jump detected." << std::endl;
         dy = jumpVelocity;  // start jumping by setting the vertical velocity
         isJumping = true;
         isOnGround = false;

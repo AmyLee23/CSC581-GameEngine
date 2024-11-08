@@ -74,7 +74,7 @@ std::unordered_map<std::string, std::tuple<size_t, double, double>> JClient::des
 }
 
 // Function to send player input (REQ-REP) to the server and wait for updated game state
-std::unordered_map<std::string, std::tuple<size_t, double, double>> JClient::sendInput(const std::string& name, size_t type, const std::pair<double, double>& position) {
+std::unordered_map<std::string, std::tuple<size_t, double, double>> JClient::sendInput(const std::string& name, size_t type, const std::pair<double, double>& position, const bool isDeathEvent) {
     if (!action_socket) {
         std::cerr << "Action socket is not initialized!" << std::endl;
         return std::unordered_map<std::string, std::tuple<size_t, double, double>>{};
@@ -82,6 +82,10 @@ std::unordered_map<std::string, std::tuple<size_t, double, double>> JClient::sen
 
     // Serialize the player's input (player name and position)
     std::string message = name + " " + std::to_string(type) + " " + std::to_string(position.first) + " " + std::to_string(position.second);
+    if (isDeathEvent) {
+        message = "DEATH " + message;
+        std::cout << "Message being sent from client: " << message << std::endl;
+    }
 
     // Send the serialized message to the server
     zmq::message_t input_msg(message.size());

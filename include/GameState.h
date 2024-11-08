@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include "EventManager.h"
+#include "JClient.h"
 
 class Timeline;
 class GameWorld;
@@ -18,9 +19,11 @@ private:
     GameTypes& gameTypes;
     EventManager eventManager;
     std::queue<std::shared_ptr<Event>> pendingEvents;
+    JClient* client;
 
 public:
     GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types);
+    GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types, JClient& client);
     ~GameState();
 
     void step(const Uint8* keystate);

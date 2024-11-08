@@ -9,6 +9,8 @@
 #include "BouncingMovement.h"
 #include "SimpleRectDrawer.h"
 #include "GameTypes.h"
+#include "DeathEventHandler.h"
+#include "SpawnEventHandler.h"
 #include <thread>
 #include <mutex>
 #include <iostream>
@@ -20,6 +22,8 @@ std::mutex mtx;
 void handleMovement(GameState& gameState) {
     std::unique_lock<std::mutex> lock(mtx);
     gameState.stepMovement();
+    gameState.processPendingEvents();
+    gameState.getEventManager().update();
 }
 
 int main(int argc, char* args[]) {
@@ -33,6 +37,10 @@ int main(int argc, char* args[]) {
     GameTypes types;
     GameState gameState(globalTimeline, gameWorld, physics, windowManager, types);
 
+    auto& eventManager = gameState.getEventManager(); // Get reference to event manager
+    eventManager.registerHandler("Death", std::make_shared<DeathEventHandler>(gameState));
+    eventManager.registerHandler("Spawn", std::make_shared<SpawnEventHandler>());
+
     // Configure the physics engine
     gameState.getPhysicsEngine().setPixelsPerMeter(16.0);
     gameState.getPhysicsEngine().setGravity(5.0 / 100.0);
@@ -41,7 +49,7 @@ int main(int argc, char* args[]) {
     SDL_Color green = { 0, 255, 0, 255 };
     SDL_Color red = { 255, 0, 0, 255 };
     double spawnX = 20.0;
-    double spawnY = static_cast<double>(gameWorld.getWorldHeight() - 100);
+    double spawnY = 200.0;
 
     // define game types (expected types are "player" and "platform", can customize further if needed)
     size_t player_type = types.getTypeHash("player");

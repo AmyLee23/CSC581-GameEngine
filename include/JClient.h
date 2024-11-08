@@ -14,7 +14,7 @@ public:
     void connectToServer();
 
     // Sends player input (REQ-REP) to the server and waits for latest game state
-    std::unordered_map<std::string, std::tuple<size_t, double, double>> sendInput(const std::string& name, size_t type, const std::pair<double, double>& position);
+    std::unordered_map<std::string, std::tuple<size_t, double, double>> sendInput(const std::string& name, size_t type, const std::pair<double, double>& position, const bool isDeathEvent);
 
     //Function that only sends a message with the client coordinates as -1, -1 and has the don't wait flag
     // void deleteClient(const std::string& name, const std::pair<double, double>& position);

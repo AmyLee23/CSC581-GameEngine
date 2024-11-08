@@ -7,6 +7,7 @@
 #include "PhysicsEngine.h"
 #include "GameWorld.h"
 #include "GameTypes.h"
+#include "DeathEvent.h"
 
 // Constructor for the JServer class
 JServer::JServer(int port_req_rep)
@@ -73,28 +74,52 @@ void JServer::handleClientInput(GameState& gameState, zmq::socket_t* client_sock
         if (client_socket->recv(request, zmq::recv_flags::none)) {
             std::string client_input(static_cast<char*>(request.data()), request.size());
             //std::cout << "Received input: " << client_input << std::endl;
-
-            // Deserialize the input (expected format: "name positionx positiony")
-            std::istringstream iss(client_input);
             std::string sprite_name;
             size_t type;
             double position_x, position_y;
-            iss >> sprite_name >> type >> position_x >> position_y;
+            
+            //std::cout << "Message received at server all: " << client_input << std::endl;
 
-            // Process the input
-            auto* sprite = gameState.getGameWorld().getObjectByName(sprite_name);
-            if (sprite) {
-                double last_x = sprite->getPosition()->getX();
-                double last_y = sprite->getPosition()->getY();
-                sprite->getPosition()->setX(position_x);
-                sprite->getPosition()->setY(position_y);
+            if (client_input.find("DEATH") != std::string::npos) {
+                std::cout << "Message received at server: " << client_input << std::endl;
 
-                // Check for collisions using the PhysicsEngine
-                auto& physicsEngine = gameState.getPhysicsEngine();
-                if (physicsEngine.checkCollisions(*sprite, gameState)) {
-                    // Revert the position if collision detected
-                    sprite->getPosition()->setX(last_x);
-                    sprite->getPosition()->setY(last_y);
+                std::istringstream iss(client_input.substr(6));
+                iss >> sprite_name >> type >> position_x >> position_y;
+
+                // Get sprite from server's GameState
+                auto* sprite = gameState.getGameWorld().getObjectByName(sprite_name);
+                if (sprite) {
+                    // Queue death event in server's GameState
+                    gameState.getEventManager().raiseEvent(
+                        std::make_shared<DeathEvent>(
+                            gameState.getTimeline(),
+                            *sprite
+                        )
+                    );
+
+                    gameState.processPendingEvents();
+                }
+            }
+            else {
+                // Deserialize the input (expected format: "name positionx positiony")
+                std::istringstream iss(client_input);
+                iss >> sprite_name >> type >> position_x >> position_y;
+
+                // Process the input
+                auto* sprite = gameState.getGameWorld().getObjectByName(sprite_name);
+                if (sprite) {
+                    double last_x = sprite->getPosition()->getX();
+                    double last_y = sprite->getPosition()->getY();
+                    sprite->getPosition()->setX(position_x);
+                    sprite->getPosition()->setY(position_y);
+
+                    // Check for collisions using the PhysicsEngine
+                    auto& physicsEngine = gameState.getPhysicsEngine();
+                    if (physicsEngine.checkCollisions(*sprite, gameState)) {
+                        // Revert the position if collision detected
+                        sprite->getPosition()->setX(last_x);
+                        sprite->getPosition()->setY(last_y);
+                    }
                 }
             }
 
