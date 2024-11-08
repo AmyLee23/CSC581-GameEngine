@@ -8,6 +8,7 @@
 #include <mutex>
 #include <tuple>
 #include "GameState.h"
+#include "Event.h"
 
 class JServer {
 public:

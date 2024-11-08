@@ -54,7 +54,7 @@ int main(int argc, char* args[]) {
     WindowManager windowManager;
     GameWorld gameWorld(800, 600);
     GameTypes types;
-    GameState gameState(globalTimeline, gameWorld, physics, windowManager, types);
+    GameState gameState(globalTimeline, gameWorld, physics, windowManager, types, client);
     GameInput gameInput;
 
     auto& eventManager = gameState.getEventManager(); // Get reference to event manager
@@ -72,7 +72,7 @@ int main(int argc, char* args[]) {
     SDL_Color green = { 0, 255, 0, 255 };
     SDL_Color red = { 255, 0, 0, 255 };
     double spawnX = 20.0;
-    double spawnY = static_cast<double>(gameWorld.getWorldHeight() - 100);
+    double spawnY = 200.0;
 
     // define game types (expected types are "player" and "platform", can customize further if needed)
     size_t player_type = types.getTypeHash("player");
@@ -193,8 +193,8 @@ int main(int argc, char* args[]) {
 
         // Send client updates to server
         NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
-        movingSprites = client.sendInput(player->getName(), player_type, { player->getPosition()->getX(), player->getPosition()->getY()});
-
+        movingSprites = client.sendInput(player->getName(), player_type, { player->getPosition()->getX(), player->getPosition()->getY()}, false);
+         
         std::set<std::string> localSpriteNames;
         for (auto& sprite : gameWorld.getObjects()) {
             localSpriteNames.insert(sprite.first);

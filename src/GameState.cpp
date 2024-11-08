@@ -12,7 +12,10 @@
 #include <iostream>
 
 GameState::GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types)
-    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window), gameTypes(types), eventManager(timeline) {}
+    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window), gameTypes(types), eventManager(timeline), client(nullptr) {}
+
+GameState::GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types, JClient& client)
+    : globalTimeline(timeline), gameWorld(world), physicsEngine(physics), windowManager(window), gameTypes(types), eventManager(timeline), client(&client) {}
 
 GameState::~GameState() {
     for (auto& pair : gameWorld.getObjects()) {
@@ -88,6 +91,15 @@ void GameState::processPendingEvents() {
     while (!pendingEvents.empty()) {
         auto event = pendingEvents.front();
         pendingEvents.pop();
-        eventManager.raiseEvent(event);
+
+        if (event->getType() == "Death" && client) {
+            NamedSprite* sprite = gameWorld.getObjectByName(client->getPlayerName());
+            std::pair<double, double> currentPos = { sprite->getPosition()->getX(), sprite->getPosition()->getY()};
+            client->sendInput(client->getPlayerName(), gameTypes.getTypeHash("player"), currentPos, true);
+            std::cout << "Sending death event across network" << std::endl;
+        }
+        else {
+            eventManager.raiseEvent(event);
+        } 
     }
 }
