@@ -39,7 +39,7 @@ proportional toggle: s
 pause/unpause: p  
 speed up / slow down: + / -  
 
-**Input Chords**
-left arrow key + left arrow key: dash left
-right arrow key + right arrow key: dash right
+**Input Chords**  
+left arrow key + left arrow key: dash left  
+right arrow key + right arrow key: dash right  
 The dashing speeds up the player's speed three times and also dashes through the fixed objects in the game.
