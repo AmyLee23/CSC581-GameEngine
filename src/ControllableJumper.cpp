@@ -97,7 +97,7 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
         for (int step = 0; step < stepsX; ++step) {
             position.setX(lastX + incrementX);
 
-            if (physics.checkCollisionsWithType(types.getTypeHash("obstacle"), sprite, gameState)) {
+            if (physics.checkCollisionsWithType(types.getTypeHash("obstacle"), sprite, gameState) and !isDashing) {
                 gameState.queueEvent(
                     std::make_shared<DeathEvent>(
                         sprite.getTimeline(),
@@ -110,7 +110,7 @@ void ControllableJumper::move(NamedSprite& sprite, GameState& gameState, double 
             // Check for collisions after each incremental movement
             if (position.getX() < 0 ||
                 position.getX() + position.getWidth() > gameWorld.getWorldWidth() ||
-                physics.checkCollisions(sprite, gameState)) {
+                (physics.checkCollisions(sprite, gameState) and !isDashing)) {
                 gameState.queueEvent(
                     std::make_shared<CollisionEvent>(
                         sprite.getTimeline(),

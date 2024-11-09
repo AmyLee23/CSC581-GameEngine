@@ -17,7 +17,7 @@ private:
     // Dash properties
     bool isDashing = false;
     double dashSpeedMultiplier = 3.0; // Adjust multiplier as needed
-    const double dashDuration = 0.2; // Dash duration in seconds
+    const double dashDuration = 0.25; // Dash duration in seconds
     std::chrono::steady_clock::time_point dashStartTime;
 
 public:

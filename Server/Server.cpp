@@ -64,7 +64,7 @@ int main(int argc, char* args[]) {
     NamedSprite* ground = new NamedSprite("ground", fixed_type, groundPos, nullptr, nullptr, groundDrawer, groundTimeline, spawnX, spawnY);
     gameWorld.addObject(ground);
 
-    PositionComponent* fixedPos1 = new StandardPosition(400.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 75, 100);
+    PositionComponent* fixedPos1 = new StandardPosition(400.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 15, 100);
     DrawerComponent* fixedDrawer1 = new SimpleRectDrawer({ 0, 0, 0, 255 });
     Timeline fixedTimeline1(&globalTimeline, 64);
     NamedSprite* fixedShape1 = new NamedSprite("obstacle", obstacle_type, fixedPos1, nullptr, nullptr, fixedDrawer1, fixedTimeline1, spawnX, spawnY);
