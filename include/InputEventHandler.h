@@ -29,7 +29,7 @@ public:
             if (keystate[SDL_SCANCODE_LEFT]) {
                 auto now = std::chrono::steady_clock::now();
                 if (leftKeyReleased && now - lastLeftTap < doubleTapThreshold) {
-                    std::cout << "Double-tap detected for left key" << std::endl;
+                    std::cout << "Input chord double-tap detected for left key" << std::endl;
                     jumper->startDash(-1); // Start dash to the left
                 }
                 lastLeftTap = now;
@@ -42,7 +42,7 @@ public:
             if (keystate[SDL_SCANCODE_RIGHT]) {
                 auto now = std::chrono::steady_clock::now();
                 if (rightKeyReleased && now - lastRightTap < doubleTapThreshold) {
-                    std::cout << "Double-tap detected for right key" << std::endl;
+                    std::cout << "Input chord double-tap detected for right key" << std::endl;
                     jumper->startDash(1); // Start dash to the right
                 }
                 lastRightTap = now;

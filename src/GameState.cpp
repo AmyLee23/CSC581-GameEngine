@@ -97,6 +97,7 @@ void GameState::processPendingEvents() {
             std::pair<double, double> currentPos = { sprite->getPosition()->getX(), sprite->getPosition()->getY()};
             client->sendInput(client->getPlayerName(), gameTypes.getTypeHash("player"), currentPos, true);
             std::cout << "Sending death event across network" << std::endl;
+            windowManager.setXOffset(0);
         }
         else {
             eventManager.raiseEvent(event);
