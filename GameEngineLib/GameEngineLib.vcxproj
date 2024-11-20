@@ -176,6 +176,7 @@
     <ClInclude Include="..\include\SpawnEvent.h" />
     <ClInclude Include="..\include\SpawnEventHandler.h" />
     <ClInclude Include="..\include\StandardPosition.h" />
+    <ClInclude Include="..\include\TextureComponent.h" />
     <ClInclude Include="..\include\Timeline.h" />
     <ClInclude Include="..\include\WindowManager.h" />
     <ClInclude Include="framework.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="..\src\SimpleRectDrawer.cpp" />
     <ClCompile Include="..\src\SpawnEvent.cpp" />
     <ClCompile Include="..\src\StandardPosition.cpp" />
+    <ClCompile Include="..\src\TextureComponent.cpp" />
     <ClCompile Include="..\src\Timeline.cpp" />
     <ClCompile Include="..\src\WindowManager.cpp" />
     <ClCompile Include="GameEngineLib.cpp" />

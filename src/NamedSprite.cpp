@@ -3,7 +3,7 @@
 
 NamedSprite::NamedSprite(const std::string& name, size_t typeHash, PositionComponent* position, MovementComponent* movement,
     InputComponent* input, DrawerComponent* drawer, Timeline& timeline, double spawnX, double spawnY)
-    : name(name), typeHash(typeHash), position(position), movement(movement), input(input), drawer(drawer), 
+    : name(name), typeHash(typeHash), position(position), movement(movement), input(input), drawer(drawer),
     localTimeline(timeline), spawnX(spawnX), spawnY(spawnY) {}
 
 NamedSprite::~NamedSprite() {

@@ -5,6 +5,7 @@
 #include "GameState.h"
 #include "GameWorld.h"
 #include "WindowManager.h"
+#include "TextureComponent.h" // Include the new TextureComponent header
 
 SimpleRectDrawer::SimpleRectDrawer(SDL_Color color) : color(color) {}
 
@@ -33,14 +34,41 @@ void SimpleRectDrawer::draw(NamedSprite& sprite, GameState& gameState, bool scal
     SDL_Renderer* renderer = gameState.getWindowManager().getRenderer();
 
     PositionComponent* position = sprite.getPosition();
+    TextureComponent* texture = sprite.getTexture(); // Access the TextureComponent
 
-    if (scaling) {
-        std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // adjust X, Y
-        std::pair<int, int> scaledSize = prepareScaling(position, gameState); // adjust Width, Height
-        draw(relativePosition.first, relativePosition.second, scaledSize.first, scaledSize.second, renderer);
+    if (texture && texture->isLoaded()) {
+        // Render the texture with or without scaling
+        SDL_Rect destRect;
+        if (scaling) {
+            std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // Adjust X, Y
+            std::pair<int, int> scaledSize = prepareScaling(position, gameState); // Adjust Width, Height
+            destRect = {
+                static_cast<int>(relativePosition.first),
+                static_cast<int>(relativePosition.second),
+                scaledSize.first,
+                scaledSize.second
+            };
+        }
+        else {
+            destRect = {
+                static_cast<int>(position->getX()),
+                static_cast<int>(position->getY()),
+                position->getWidth(),
+                position->getHeight()
+            };
+        }
+        SDL_RenderCopy(renderer, texture->getTexture(), nullptr, &destRect);
     }
     else {
-        draw(position->getX(), position->getY(), position->getWidth(), position->getHeight(), renderer); // Draw original
+        // Fallback to color-based rectangle rendering
+        if (scaling) {
+            std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // Adjust X, Y
+            std::pair<int, int> scaledSize = prepareScaling(position, gameState); // Adjust Width, Height
+            draw(relativePosition.first, relativePosition.second, scaledSize.first, scaledSize.second, renderer);
+        }
+        else {
+            draw(position->getX(), position->getY(), position->getWidth(), position->getHeight(), renderer); // Draw original
+        }
     }
 }
 
@@ -50,16 +78,44 @@ void SimpleRectDrawer::drawWithOffset(NamedSprite& sprite, GameState& gameState,
     SDL_Renderer* renderer = gameState.getWindowManager().getRenderer();
 
     PositionComponent* position = sprite.getPosition();
+    TextureComponent* texture = sprite.getTexture(); // Access the TextureComponent
 
-    if (scaling) {
-        std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // adjust X, Y
-        std::pair<int, int> scaledSize = prepareScaling(position, gameState); // adjust Width, Height
-        draw(relativePosition.first, relativePosition.second, scaledSize.first, scaledSize.second, renderer);
+    if (texture && texture->isLoaded()) {
+        // Render the texture with scaling and offset
+        SDL_Rect destRect;
+        if (scaling) {
+            std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // Adjust X, Y
+            std::pair<int, int> scaledSize = prepareScaling(position, gameState); // Adjust Width, Height
+            destRect = {
+                static_cast<int>(relativePosition.first + x_offset),
+                static_cast<int>(relativePosition.second + y_offset),
+                scaledSize.first,
+                scaledSize.second
+            };
+        }
+        else {
+            destRect = {
+                static_cast<int>(position->getX() + x_offset),
+                static_cast<int>(position->getY() + y_offset),
+                position->getWidth(),
+                position->getHeight()
+            };
+        }
+        SDL_RenderCopy(renderer, texture->getTexture(), nullptr, &destRect);
     }
     else {
-        draw(position->getX() + x_offset, position->getY() + y_offset, position->getWidth(), position->getHeight(), renderer); // Draw original
+        // Fallback to color-based rectangle rendering
+        if (scaling) {
+            std::pair<double, double> relativePosition = prepareRelativePosition(position, gameState); // Adjust X, Y
+            std::pair<int, int> scaledSize = prepareScaling(position, gameState); // Adjust Width, Height
+            draw(relativePosition.first + x_offset, relativePosition.second + y_offset, scaledSize.first, scaledSize.second, renderer);
+        }
+        else {
+            draw(position->getX() + x_offset, position->getY() + y_offset, position->getWidth(), position->getHeight(), renderer); // Draw original
+        }
     }
 }
+
 
 // Calculate the relative X and Y
 std::pair<double, double> SimpleRectDrawer::prepareRelativePosition(PositionComponent* position, GameState& gameState) {

@@ -15,6 +15,7 @@
 #include "CollisionEventHandler.h"
 #include "DeathEventHandler.h"
 #include "SpawnEventHandler.h"
+#include "TextureComponent.h"
 #include <SDL.h>
 #include <thread>
 #include <iostream>
@@ -62,7 +63,22 @@ int main(int argc, char* args[]) {
     eventManager.registerHandler("Collision", std::make_shared<CollisionEventHandler>());
     eventManager.registerHandler("Death", std::make_shared<DeathEventHandler>(gameState));
     eventManager.registerHandler("Spawn", std::make_shared<SpawnEventHandler>());
-    
+
+    SDL_Renderer* renderer = nullptr;
+
+    // Initialize WindowManager and renderer
+    if (!windowManager.init(800, 600)) {
+        std::cerr << "Failed to initialize WindowManager!" << std::endl;
+        return -1;
+    }
+    else {
+        renderer = gameState.getWindowManager().getRenderer();
+        if (!renderer) {
+            std::cerr << "Renderer is null in getRenderer!" << std::endl;
+            return -1;
+        }
+    }
+
 
     // Configure the physics engine
     gameState.getPhysicsEngine().setPixelsPerMeter(16.0);
@@ -71,8 +87,10 @@ int main(int argc, char* args[]) {
     // colors
     SDL_Color green = { 0, 255, 0, 255 };
     SDL_Color red = { 255, 0, 0, 255 };
+    SDL_Color cyan = { 0, 255, 255, 0 };
+    SDL_Color black = { 0, 0, 0, 255 };
     double spawnX = 20.0;
-    double spawnY = 200.0;
+    double spawnY = 400.0;
 
     // define game types (expected types are "player" and "platform", can customize further if needed)
     size_t player_type = types.getTypeHash("player");
@@ -87,12 +105,25 @@ int main(int argc, char* args[]) {
     NamedSprite* fixedShape = new NamedSprite("ground", fixed_type, fixedPos, nullptr, nullptr, fixedDrawer, fixedTimeline, spawnX, spawnY);
     gameWorld.addObject(fixedShape);
 
+    PositionComponent* splatformPos = new StandardPosition(150.0, 400.0, 100, 20);
+    DrawerComponent* splatformDrawer = new SimpleRectDrawer(cyan);
+    Timeline splatformTimeline(&globalTimeline, 64);
+    NamedSprite* splatform = new NamedSprite("splatform", fixed_type, splatformPos, nullptr, nullptr, splatformDrawer, splatformTimeline, spawnX, spawnY);
+    gameWorld.addObject(splatform);
+
+    PositionComponent* splatform1Pos = new StandardPosition(550.0, 400.0, 100, 20);
+    DrawerComponent* splatform1Drawer = new SimpleRectDrawer(cyan);
+    Timeline splatform1Timeline(&globalTimeline, 64);
+    NamedSprite* splatform1 = new NamedSprite("splatform1", fixed_type, splatform1Pos, nullptr, nullptr, splatform1Drawer, splatform1Timeline, spawnX, spawnY);
+    gameWorld.addObject(splatform1);
+
     // Create the fixed obstacle shape (must match server's)
-    PositionComponent* fixedPos1 = new StandardPosition(400.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 15, 100);
-    DrawerComponent* fixedDrawer1 = new SimpleRectDrawer({0, 0, 0, 255});
-    Timeline fixedTimeline1(&globalTimeline, 64);
-    NamedSprite* fixedShape1 = new NamedSprite("obstacle", obstacle_type, fixedPos1, nullptr, nullptr, fixedDrawer1, fixedTimeline1, spawnX, spawnY);
-    gameWorld.addObject(fixedShape1);
+
+    PositionComponent* fixedPos3 = new StandardPosition(785.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 15, 100);
+    DrawerComponent* fixedDrawer3 = new SimpleRectDrawer(black);
+    Timeline fixedTimeline3(&globalTimeline, 64);
+    NamedSprite* fixedShape3 = new NamedSprite("obstacle3", obstacle_type, fixedPos3, nullptr, nullptr, fixedDrawer3, fixedTimeline3, spawnX, spawnY);
+    gameWorld.addObject(fixedShape3);
 
     // Create the ControllableJumper(player object) for the client
     std::string name = client.getPlayerName();
@@ -103,13 +134,18 @@ int main(int argc, char* args[]) {
     DrawerComponent* jumperDrawer = new SimpleRectDrawer(red);
     Timeline jumperTimeline(&globalTimeline, 10);
     NamedSprite* jumper = new NamedSprite(name, player_type, jumperPos, jumperMovement, jumperMovement, jumperDrawer, jumperTimeline, spawnX, spawnY);
+    // Add a texture to the jumper
+    TextureComponent* jumperTexture = new TextureComponent(renderer, "spaceship.bmp");
+    if (jumperTexture->isLoaded()) {
+        jumper->setTexture(jumperTexture);
+        std::cout << "Texture loaded successfully for jumper!" << std::endl;
+    }
+    else {
+        std::cerr << "Failed to load texture for jumper!" << std::endl;
+    }
+
     gameWorld.addObject(jumper);
 
-    // Initialize SDL for rendering
-    if (!windowManager.init(800, 600)) {
-        std::cerr << "Failed to initialize!" << std::endl;
-        return -1;
-    }
 
     // Main client loop
     bool quit = false;
@@ -193,8 +229,8 @@ int main(int argc, char* args[]) {
 
         // Send client updates to server
         NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
-        movingSprites = client.sendInput(player->getName(), player_type, { player->getPosition()->getX(), player->getPosition()->getY()}, false);
-         
+        movingSprites = client.sendInput(player->getName(), player_type, { player->getPosition()->getX(), player->getPosition()->getY() }, false);
+
         std::set<std::string> localSpriteNames;
         for (auto& sprite : gameWorld.getObjects()) {
             localSpriteNames.insert(sprite.first);

@@ -8,6 +8,7 @@
 #include "MovementComponent.h"
 #include "InputComponent.h"
 #include "DrawerComponent.h"
+#include "TextureComponent.h"
 #include "Timeline.h"
 
 class NamedSprite {
@@ -18,6 +19,7 @@ private:
     MovementComponent* movement;
     InputComponent* input;
     DrawerComponent* drawer;
+    TextureComponent* textureComponent;
     Timeline& localTimeline;
     double spawnX;
     double spawnY;
@@ -27,6 +29,9 @@ public:
         InputComponent* input, DrawerComponent* drawer, Timeline& timeline, double spawnX, double spawnY);
 
     ~NamedSprite();
+
+    void setTexture(TextureComponent* texture) { textureComponent = texture; }
+    TextureComponent* getTexture() const { return textureComponent; }
 
     std::string getName() const;
     size_t getTypeHash() const;

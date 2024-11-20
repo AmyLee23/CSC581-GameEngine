@@ -28,7 +28,7 @@ void handleMovement(GameState& gameState) {
 
 int main(int argc, char* args[]) {
     // Initialize the server
-    JServer server(5555); 
+    JServer server(5555);
     // Initialize game engine components
     Timeline globalTimeline(nullptr, 1);
     PhysicsEngine physics;
@@ -48,8 +48,10 @@ int main(int argc, char* args[]) {
     // colors
     SDL_Color green = { 0, 255, 0, 255 };
     SDL_Color red = { 255, 0, 0, 255 };
+    SDL_Color cyan = { 0, 255, 255, 0 };
+    SDL_Color black = { 0, 0, 0, 255 };
     double spawnX = 20.0;
-    double spawnY = 200.0;
+    double spawnY = 400.0;
 
     // define game types (expected types are "player" and "platform", can customize further if needed)
     size_t player_type = types.getTypeHash("player");
@@ -64,11 +66,23 @@ int main(int argc, char* args[]) {
     NamedSprite* ground = new NamedSprite("ground", fixed_type, groundPos, nullptr, nullptr, groundDrawer, groundTimeline, spawnX, spawnY);
     gameWorld.addObject(ground);
 
-    PositionComponent* fixedPos1 = new StandardPosition(400.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 15, 100);
-    DrawerComponent* fixedDrawer1 = new SimpleRectDrawer({ 0, 0, 0, 255 });
-    Timeline fixedTimeline1(&globalTimeline, 64);
-    NamedSprite* fixedShape1 = new NamedSprite("obstacle", obstacle_type, fixedPos1, nullptr, nullptr, fixedDrawer1, fixedTimeline1, spawnX, spawnY);
-    gameWorld.addObject(fixedShape1);
+    PositionComponent* splatformPos = new StandardPosition(150.0, 400.0, 100, 20);
+    DrawerComponent* splatformDrawer = new SimpleRectDrawer(cyan);
+    Timeline splatformTimeline(&globalTimeline, 64);
+    NamedSprite* splatform = new NamedSprite("splatform", fixed_type, splatformPos, nullptr, nullptr, splatformDrawer, splatformTimeline, spawnX, spawnY);
+    gameWorld.addObject(splatform);
+
+    PositionComponent* splatform1Pos = new StandardPosition(550.0, 400.0, 100, 20);
+    DrawerComponent* splatform1Drawer = new SimpleRectDrawer(cyan);
+    Timeline splatform1Timeline(&globalTimeline, 64);
+    NamedSprite* splatform1 = new NamedSprite("splatform1", fixed_type, splatform1Pos, nullptr, nullptr, splatform1Drawer, splatform1Timeline, spawnX, spawnY);
+    gameWorld.addObject(splatform1);
+
+    PositionComponent* fixedPos3 = new StandardPosition(785.0, static_cast<double>(gameWorld.getWorldHeight() - 150), 15, 100);
+    DrawerComponent* fixedDrawer3 = new SimpleRectDrawer(black);
+    Timeline fixedTimeline3(&globalTimeline, 64);
+    NamedSprite* fixedShape3 = new NamedSprite("obstacle3", obstacle_type, fixedPos3, nullptr, nullptr, fixedDrawer3, fixedTimeline3, spawnX, spawnY);
+    gameWorld.addObject(fixedShape3);
 
     // Bouncing shape (platform)
     PositionComponent* platformPos = new StandardPosition(500.0, 200.0, 50, 50);
@@ -78,6 +92,12 @@ int main(int argc, char* args[]) {
     NamedSprite* moving_platform = new NamedSprite("platform", platform_type, platformPos, platformMovement, nullptr, platformDrawer, platformTimeline, spawnX, spawnY);
     gameWorld.addObject(moving_platform);
 
+    PositionComponent* platform1Pos = new StandardPosition(400.0, 100.0, 50, 50);
+    MovementComponent* platform1Movement = new BouncingMovement(0.0, 30.0 / 100.0);
+    DrawerComponent* platform1Drawer = new SimpleRectDrawer(green);
+    Timeline platform1Timeline(&globalTimeline, 10);
+    NamedSprite* moving_platform1 = new NamedSprite("platform1", platform_type, platform1Pos, platform1Movement, nullptr, platform1Drawer, platform1Timeline, spawnX, spawnY);
+    gameWorld.addObject(moving_platform1);
     // Track the number of clients
     int last_num_clients = 0;  // Initial client count
 
