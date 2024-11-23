@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -171,11 +171,18 @@
     <ClInclude Include="..\include\NamedSprite.h" />
     <ClInclude Include="..\include\PeerNetwork.h" />
     <ClInclude Include="..\include\PhysicsEngine.h" />
+    <ClInclude Include="..\include\PlayReplayEvent.h" />
+    <ClInclude Include="..\include\PlayReplayEventHandler.h" />
     <ClInclude Include="..\include\PositionComponent.h" />
+    <ClInclude Include="..\include\ReplayManager.h" />
     <ClInclude Include="..\include\SimpleRectDrawer.h" />
     <ClInclude Include="..\include\SpawnEvent.h" />
     <ClInclude Include="..\include\SpawnEventHandler.h" />
     <ClInclude Include="..\include\StandardPosition.h" />
+    <ClInclude Include="..\include\StartRecordingEvent.h" />
+    <ClInclude Include="..\include\StartRecordingEventHandler.h" />
+    <ClInclude Include="..\include\StopRecordingEvent.h" />
+    <ClInclude Include="..\include\StopRecordingEventHandler.h" />
     <ClInclude Include="..\include\Timeline.h" />
     <ClInclude Include="..\include\WindowManager.h" />
     <ClInclude Include="framework.h" />

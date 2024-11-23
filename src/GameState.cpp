@@ -9,6 +9,7 @@
 #include "GameTypes.h"
 #include "EventManager.h"
 #include "InputEvent.h"
+#include "PlayReplayEventHandler.h"
 #include <iostream>
 
 GameState::GameState(Timeline& timeline, GameWorld& world, PhysicsEngine& physics, WindowManager& window, GameTypes& types)
@@ -24,9 +25,63 @@ GameState::~GameState() {
 }
 
 void GameState::step(const Uint8* keystate) {
+    std::cout << "Hello replay manager isinreplay is: " << replayManager.isInReplay() << std::endl;
+    if (replayManager.isInReplay()) {
+        std::cout << "Is in replay" << std::endl;
+        int currentReplayIndex = replayManager.getCurrentReplayIndex();
+        if (currentReplayIndex >= replayManager.getGameStates().size()) {
+            replayManager.setisInReplay(false);
+            std::cout << "Replay finished" << std::endl;
+            return;
+        }
+
+        // Apply the current state
+        applyGameState(replayManager.getGameStates()[currentReplayIndex].second, *this);
+        currentReplayIndex++;
+        replayManager.setCurrentReplayIndex(currentReplayIndex);
+        return;
+    }
+
     stepInput(keystate);
     stepMovement();
     eventManager.update();
+}
+
+void GameState::applyGameState(const std::unordered_map<std::string, std::tuple<size_t, double, double>>& state,
+    GameState& gameState) {
+    std::cout << "Hello applying gamestate" << std::endl;
+    //windowManager.updateWindow(gameState);
+ /*   for (const auto& pair : state) {
+        const std::string& name = pair.first;
+        const auto& data = pair.second;
+
+        if (NamedSprite* sprite = gameState.getGameWorld().getObjectByName(name)) {
+            sprite->getPosition()->setX(std::get<1>(data));
+            sprite->getPosition()->setY(std::get<2>(data));
+        }
+    }*/
+}
+
+void GameState::stepReplay() {
+    // Handle input for each NamedSprite
+    if (replayManager.isInReplay()) {
+        std::cout << "Is in replay" << std::endl;
+        int currentReplayIndex = replayManager.getCurrentReplayIndex();
+        if (currentReplayIndex >= replayManager.getGameStates().size()) {
+            replayManager.setisInReplay(false);
+            std::cout << "Replay finished" << std::endl;
+            return;
+        }
+
+        // Apply the current state
+        applyGameState(replayManager.getGameStates()[currentReplayIndex].second, *this);
+        currentReplayIndex++;
+        replayManager.setCurrentReplayIndex(currentReplayIndex);
+        return;
+    }
+    else {
+        return;
+    }
 }
 
 void GameState::stepInput(const Uint8* keystate) {
