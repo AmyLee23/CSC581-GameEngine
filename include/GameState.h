@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include "EventManager.h"
 #include "JClient.h"
+#include "ReplayManager.h"
 
 class Timeline;
 class GameWorld;
@@ -19,6 +20,7 @@ private:
     GameTypes& gameTypes;
     EventManager eventManager;
     std::queue<std::shared_ptr<Event>> pendingEvents;
+    ReplayManager replayManager;
     JClient* client;
 
 public:
@@ -30,6 +32,9 @@ public:
     // step split up (for multi threading)
     void stepInput(const Uint8* keystate);
     void stepMovement();
+    void applyGameState(const std::unordered_map<std::string, std::tuple<size_t, double, double>>& state,
+        GameState& gameState);
+    void stepReplay();
 
 
     Timeline& getTimeline();
@@ -38,6 +43,7 @@ public:
     WindowManager& getWindowManager();
     GameTypes& getGameTypes();
     EventManager& getEventManager() { return eventManager; }
+    ReplayManager& getReplayManager() { return replayManager; }
 
     void queueEvent(std::shared_ptr<Event> event);
     void processPendingEvents();

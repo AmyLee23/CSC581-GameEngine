@@ -15,6 +15,9 @@
 #include "CollisionEventHandler.h"
 #include "DeathEventHandler.h"
 #include "SpawnEventHandler.h"
+#include "StartRecordingEventHandler.h"
+#include "StopRecordingEventHandler.h"
+#include "PlayReplayEventHandler.h"
 #include <SDL.h>
 #include <thread>
 #include <iostream>
@@ -62,6 +65,9 @@ int main(int argc, char* args[]) {
     eventManager.registerHandler("Collision", std::make_shared<CollisionEventHandler>());
     eventManager.registerHandler("Death", std::make_shared<DeathEventHandler>(gameState));
     eventManager.registerHandler("Spawn", std::make_shared<SpawnEventHandler>());
+    eventManager.registerHandler("StartRecording", std::make_shared<StartRecordingEventHandler>(gameState.getReplayManager()));
+    eventManager.registerHandler("StopRecording", std::make_shared<StopRecordingEventHandler>(gameState.getReplayManager()));
+    eventManager.registerHandler("PlayReplay", std::make_shared<PlayReplayEventHandler>(gameState.getReplayManager(), gameState));
     
 
     // Configure the physics engine
@@ -182,6 +188,7 @@ int main(int argc, char* args[]) {
             }
         }
 
+        //gameState.stepReplay();
         // Create threads for movement and input
         std::thread inputThread(handleInput, std::ref(gameState), keystate);
         std::thread movementThread(handleMovement, std::ref(gameState));
@@ -193,24 +200,49 @@ int main(int argc, char* args[]) {
 
         // Send client updates to server
         NamedSprite* player = gameWorld.getObjectByName(client.getPlayerName());
-        movingSprites = client.sendInput(player->getName(), player_type, { player->getPosition()->getX(), player->getPosition()->getY()}, false);
-         
-        std::set<std::string> localSpriteNames;
-        for (auto& sprite : gameWorld.getObjects()) {
-            localSpriteNames.insert(sprite.first);
+        if (gameState.getReplayManager().isInReplay()) {
+            size_t currReplayIndex = gameState.getReplayManager().getCurrentReplayIndex();
+            std::cout << "Hey i am replaying!!!!!!!!!!!!!!!!!!!! " << currReplayIndex << std::endl;
+            if (currReplayIndex >= gameState.getReplayManager().getGameStates().size()) {
+                //movingSprites = gameState.getReplayManager().getGameStates()[].second;
+                gameState.getReplayManager().setisInReplay(false);
+                
+            }
+            else {
+                movingSprites = gameState.getReplayManager().getGameStates()[currReplayIndex].second;
+                currReplayIndex++;
+                gameState.getReplayManager().setCurrentReplayIndex(currReplayIndex);
+            }
         }
+        else {
+            movingSprites = client.sendInput(player->getName(), player_type, { player->getPosition()->getX(), player->getPosition()->getY()}, false);
 
-        std::set<std::string> serverSpriteNames;
-        for (auto& sprite : movingSprites) {
-            serverSpriteNames.insert(sprite.first);
-        }
+            std::set<std::string> localSpriteNames;
+            for (auto& sprite : gameWorld.getObjects()) {
+                localSpriteNames.insert(sprite.first);
+            }
 
-        for (const auto& name : localSpriteNames) {
-            if (serverSpriteNames.find(name) == serverSpriteNames.end() && (name.find("Player") != std::string::npos)) {
-                gameWorld.removeObject(name);
+            std::set<std::string> serverSpriteNames;
+            for (auto& sprite : movingSprites) {
+                serverSpriteNames.insert(sprite.first);
+            }
+
+            for (const auto& name : localSpriteNames) {
+                if (serverSpriteNames.find(name) == serverSpriteNames.end() && (name.find("Player") != std::string::npos)) {
+                    gameWorld.removeObject(name);
+                }
             }
         }
 
+        
+
+        if (gameState.getReplayManager().getIsRecording()) {
+            gameState.getReplayManager().recordGameState(
+                gameState.getTimeline().getTime(),
+                movingSprites
+            );
+        }
+        
         // Frame-rate limiting
         int64_t frameEndTime = globalTimeline.getTime();
         int64_t frameDuration = frameEndTime - frameStartTime;

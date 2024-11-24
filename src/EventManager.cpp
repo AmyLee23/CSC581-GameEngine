@@ -8,6 +8,10 @@ void EventManager::registerHandler(const std::string& eventType,
     handlers[eventType].push_back(handler);
 }
 
+std::vector<std::shared_ptr<EventHandler>>& EventManager::getHandlers(const std::string& eventType) {
+    return handlers[eventType];
+}
+
 void EventManager::raiseEvent(std::shared_ptr<Event> event) {
     std::lock_guard<std::mutex> lock(eventMutex);
     eventQueue.push(event);

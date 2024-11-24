@@ -11,6 +11,7 @@ public:
 
     // Register event handlers
     void registerHandler(const std::string& eventType, std::shared_ptr<EventHandler> handler);
+    std::vector<std::shared_ptr<EventHandler>>& getHandlers(const std::string& eventType);
     // Raise (queue) an event
     void raiseEvent(std::shared_ptr<Event> event);
     void update();

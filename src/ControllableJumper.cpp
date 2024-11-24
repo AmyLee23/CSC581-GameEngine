@@ -6,6 +6,9 @@
 #include "CollisionEvent.h"
 #include "DeathEvent.h"
 #include "GameTypes.h"
+#include "StartRecordingEvent.h"
+#include "StopRecordingEvent.h"
+#include "PlayReplayEvent.h"
 #include <iostream>
 
 ControllableJumper::ControllableJumper(double dx, double dy, double jumpVelocity)
@@ -190,6 +193,36 @@ void ControllableJumper::handleInput(const Uint8* keystate, NamedSprite& sprite,
             dy = jumpVelocity;  // Start jumping by setting the vertical velocity
             isJumping = true;
             isOnGround = false;
+        }
+
+        if (keystate[SDL_SCANCODE_R]) {  // Start recording with F5
+            gameState.queueEvent(
+                std::make_shared<StartRecordingEvent>(
+                    gameState.getTimeline(),
+                    sprite
+                )
+            );
+        }
+        if (keystate[SDL_SCANCODE_E]) {  // Stop recording with F6
+            gameState.queueEvent(
+                std::make_shared<StopRecordingEvent>(
+                    gameState.getTimeline()
+                )
+            );
+        }
+
+        if (keystate[SDL_SCANCODE_L]) {  // Play replay with F7
+            gameState.queueEvent(
+                std::make_shared<PlayReplayEvent>(
+                    gameState.getTimeline(),
+                    sprite
+                )
+            );
+            /*gameState.getEventManager().raiseEvent(std::make_shared<PlayReplayEvent>(
+                gameState.getTimeline(),
+                sprite
+            ));*/
+            std::cout << "Play replay event queued" << std::endl;
         }
     }
 }
